@@ -2,9 +2,10 @@
 import sql from "mssql";
 import pool from "../config/db.js";
 import { config } from "../config/db.js";
-
 import jwt from "jsonwebtoken";
 import { getType } from './../helper/PersonalHelper.js';
+const JWT_KEY = "jsjsjsjsjsj"
+
 export const getReligionController = async (req, res) => {
   try {
     const result = await pool.request().query("SELECT * FROM Religion_master");
@@ -129,7 +130,7 @@ export const getCitiesByTalukId = (req, res) => {
 export const personlController = async (req, res) => {
   try {
     const token = req.headers.authorization.split(' ')[1]; // Extract token from Authorization header
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET); // Verify and decode JWT token
+    const decodedToken = jwt.verify(token, JWT_KEY); // Verify and decode JWT token
 
     if (!decodedToken) {
       return res.status(401).json({ success: false, message: "Unauthorized" });

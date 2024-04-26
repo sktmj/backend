@@ -6,9 +6,13 @@ import pool from "../config/db.js";
 import { sendSMS } from "../helper/Sms.js";
 import { checkIfUserExists } from "../helper/PersonalHelper.js";
 
+import * as dotenv from "dotenv";
 
+dotenv.config();
 
+const JWT_KEY = "jsjsjsjsjsj"
 
+console.log(JWT_KEY , "vickyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
 
 const insertDataIntoDB = async (MobileNo, AppName, Passwrd, UserName) => {
   try {
@@ -46,7 +50,7 @@ const generateOTP = () => {
 
 // Function to generate JWT token
 const generateJWT = (AppID) => {
-  return jwt.sign({ AppID }, process.env.JWT_SECRET, {
+  return jwt.sign({ AppID }, JWT_KEY, {
     expiresIn: "10d",
   });
 };
@@ -119,10 +123,11 @@ export const verifyOTP = async (req, res) => {
 
 export const verifyToken = (req, res, next) => {
   const token = req.header("Authorization");
-  if (!token) return res.status(401).json({ error: "Access denied. No token provided." });
+  if (!token)
+    return res.status(401).json({ error: "Access denied. No token provided." });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_KEY);
     req.user = decoded.user;
     next();
   } catch (error) {
@@ -130,7 +135,6 @@ export const verifyToken = (req, res, next) => {
     res.status(401).json({ error: "Invalid token" });
   }
 };
-
 
 export const login = async (req, res) => {
   try {
@@ -153,7 +157,7 @@ export const login = async (req, res) => {
     const user = result.recordset[0];
 
     // Generate JWT token
-    const token = jwt.sign({ userName: user.UserName }, process.env.JWT_SECRET);
+    const token = jwt.sign({ userName: user.UserName }, JWT_KEY);
 
     res.status(200).json({ token });
   } catch (error) {
