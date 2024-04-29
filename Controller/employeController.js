@@ -140,14 +140,15 @@ export const login = async (req, res) => {
   try {
     const { UserName } = req.body;
 
-    // Query the database to retrieve user data
+    // Query the database to retrieve user data including AppId
     const query = `
-      SELECT UserName
+      SELECT UserName, AppId
       FROM ApplicationForm
       WHERE UserName = @UserName
     `;
 
-    const request = pool.request().input("UserName", UserName);
+    const request = pool.request();
+    request.input("UserName", UserName);
     const result = await request.query(query);
 
     if (result.recordset.length === 0) {
@@ -155,9 +156,17 @@ export const login = async (req, res) => {
     }
 
     const user = result.recordset[0];
+    const { AppId } = user; // Extract AppId from user data
+
+    // Store AppId in the user session
+    req.session.AppId = AppId;
+
+    // Log UserName and AppId to the console
+    console.log("UserName:", user.UserName);
+    console.log("AppId:", AppId);
 
     // Generate JWT token
-    const token = jwt.sign({ userName: user.UserName }, JWT_KEY);
+    const token = jwt.sign({ userName: user.UserName, AppId }, JWT_KEY);
 
     res.status(200).json({ token });
   } catch (error) {

@@ -2,6 +2,7 @@ import express from "express";
 import employeeRoutes from "./Router/employe/authRoute.js";
 import personalRoutes from "./Router/employe/personalRoutes.js"
 import QulificationRoutes from "./Router/employe/QulificationRoute.js"
+import ExperienceRoutes from "./Router/employe/ExperienceRoutes.js"
 import morgan from "morgan";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -30,7 +31,8 @@ dotenv.config();
 //Routes
 app.use("/api/v1/auth", employeeRoutes);
 app.use("/api/v1/prsl",personalRoutes)
-app.use("/api/v1/Qf",QulificationRoutes)
+app.use("/api/v1/Qlf",QulificationRoutes)
+app.use("/api/v1/expc",ExperienceRoutes)
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
