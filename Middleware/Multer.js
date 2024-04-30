@@ -1,12 +1,19 @@
-import multer from "multer";
+import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
 
 const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, 'uploads/')
+    destination: (req, file, callback) => {
+        const uploadPath = './public/uploads';
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath);
+        }
+        callback(null, uploadPath);
     },
-    filename: function(req, file, cb) {
-        cb(null, file.originalname)
+    filename: (req, file, callback) => {
+        callback(null, file.originalname);
     }
 });
 
-export const Upload = multer({ storage: storage });
+const multipleUpload = multer({ storage });
+export default multipleUpload;

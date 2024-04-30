@@ -2,17 +2,8 @@
 import pool from "../config/db.js";
 import multer from "multer";
 import fs from 'fs';
+import path from 'path';
 
-
-const storage  = multer.diskStorage({
-    destination:function(req,file,cb){
-        cb(null, 'uploads/')
-    },
-    filename:function(req,file,cb){
-        cb(null,file,originalname)
-    }
-})
- const Upload = multer({storage: storage})
 
 
 
@@ -30,16 +21,7 @@ export const getDesignation = async (req,res)=>{
 }
 
 
-export const getCourses = async (req, res) => {
-    try {
-      // Logic to fetch all courses from the database
-      const result = await pool.request().query("SELECT * FROM QualificationMaster");
-      res.json(result.recordset);
-    } catch (error) {
-      console.error("Error fetching courses:", error.message);
-      res.status(500).json({ error: "Error fetching courses" });
-    }
-  };
+
 
 export const InsertExperience = async (req, res) => {
     try {
@@ -142,10 +124,13 @@ export const InsertExperience = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
-
+const __dirname = path.resolve();
 
 export const uploadCarLicenseDoc = (req, res) => {
     try {
+        // Get the AppId from the session
+        const { AppId } = req.session;
+
         console.log("File upload request received:", req.file);
 
         // Check if a file was uploaded
@@ -153,12 +138,13 @@ export const uploadCarLicenseDoc = (req, res) => {
             return res.status(400).json({ success: false, message: "No file uploaded" });
         }
 
-        const filePath = req.file.path;
+        const fileName = req.file.originalname; // Get the original file name
+        const filePath = path.join(__dirname, 'public', 'uploads', fileName); // Construct the file path
 
         console.log("File path:", filePath);
 
         // Check if the file exists
-        fs.access(filePath, fs.constants.F_OK, (err) => {
+        fs.access(filePath, fs.constants.F_OK, async (err) => {
             if (err) {
                 // File does not exist
                 console.error("File not found:", err);
@@ -166,10 +152,26 @@ export const uploadCarLicenseDoc = (req, res) => {
             }
 
             // File exists, continue processing
-            // Perform any additional logic here
-            
-            console.log("File uploaded successfully");
-            res.status(200).json({ success: true, message: "File uploaded successfully", filePath });
+
+            try {
+                // Update the database with the file name
+                const query = `UPDATE ApplicationForm SET CarLicenseDoc = @CarLicenseDoc WHERE AppId = @AppId`;
+                const request = pool.request();
+                request.input("CarLicenseDoc", fileName);
+                request.input("AppId", AppId);
+                const result = await request.query(query);
+
+                if (result.rowsAffected[0] > 0) {
+                    console.log("File name updated successfully in the database");
+                    res.status(200).json({ success: true, message: "File name updated successfully in the database", fileName });
+                } else {
+                    console.error("Failed to update database");
+                    res.status(404).json({ success: false, message: "Failed to update database" });
+                }
+            } catch (error) {
+                console.error("Error updating database:", error.message);
+                res.status(500).json({ success: false, message: "Error updating database" });
+            }
         });
     } catch (error) {
         console.error("Error uploading file:", error.message);
