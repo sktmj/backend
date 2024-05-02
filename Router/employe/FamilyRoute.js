@@ -5,7 +5,7 @@ import { FamilyDetails,getlanguages,LanguaguesController } from '../../Controlle
 const router = express.Router();
 
 router.get("/languages",getlanguages)
-router.post("/family",FamilyDetails)
+router.post("/family", FamilyDetails);
 router.post("/postLng",LanguaguesController)
 
 export default router

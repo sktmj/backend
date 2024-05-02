@@ -12,43 +12,46 @@ export const getlanguages = async (req,res)=>{
 }
 
 export const FamilyDetails = async (req, res) => {
-    try {
-      const { Relation, Name, Age, Work, MonthSalary, PhoneNo } = req.body;
-      const AppId = req.session.AppId;
-  
-      if (!AppId) {
-        return res.status(404).json({ success: false, message: "AppId not found in session" });
-      }
-  
-      const query = `
-        INSERT INTO AppFamilyDtl (AppId,Relation,Name,Age,Work,MonthSalary,PhoneNo)
-        VALUES (@AppId, @Relation, @Name, @Age, @Work, @MonthSalary, @PhoneNo)
-      `;
-  
-      const request = pool.request();
-  
-      request.input("AppId", AppId);
-      request.input("Relation", Relation);
-      request.input("Name", Name);
-      request.input("Age", Age);
-      request.input("Work", Work);
-      request.input("MonthSalary", MonthSalary);
-      request.input("PhoneNo", PhoneNo);
-  
-      const result = await request.query(query);
-  
-      if (result.rowsAffected[0] > 0) {
-        console.log("Family Details inserted successfully");
-        res.status(200).json({ success: true, message: "Family Details inserted successfully" });
-      } else {
-        console.error("Failed to insert Family Details");
-        res.status(404).json({ success: false, message: "Failed to insert Family Details" });
-      }
-    } catch (error) {
-      console.error("Error inserting Family Details:", error.message);
-      res.status(500).json({ success: false, message: "Internal server error" });
+  try {
+    console.log("Received request:", req.method, req.url);
+    console.log("Request body:", req.body);
+
+    const { Relation, Name, Age, Work, MonthSalary, PhoneNo } = req.body;
+    const AppId = req.session.AppId;
+
+    if (!AppId) {
+      return res.status(404).json({ success: false, message: "AppId not found in session" });
     }
-  };
+
+    const query = `
+      INSERT INTO AppFamilyDtl (AppId, Relation, Name, Age, Work, MonthSalary, PhoneNo)
+      VALUES (@AppId, @Relation, @Name, @Age, @Work, @MonthSalary, @PhoneNo)
+    `;
+
+    const request = pool.request();
+
+    request.input("AppId", AppId);
+    request.input("Relation", Relation);
+    request.input("Name", Name);
+    request.input("Age", Age);
+    request.input("Work", Work);
+    request.input("MonthSalary", MonthSalary);
+    request.input("PhoneNo", PhoneNo);
+
+    const result = await request.query(query);
+
+    if (result.rowsAffected[0] > 0) {
+      console.log("Family Details inserted successfully");
+      res.status(200).json({ success: true, message: "Family Details inserted successfully" });
+    } else {
+      console.error("Failed to insert Family Details");
+      res.status(404).json({ success: false, message: "Failed to insert Family Details" });
+    }
+  } catch (error) {
+    console.error("Error inserting Family Details:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
   
 
 export const LanguaguesController = async (req, res) => {
