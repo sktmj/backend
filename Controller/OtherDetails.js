@@ -1,5 +1,19 @@
 import pool from "../config/db.js";
 
+export const getLocation= async (req, res) => {
+  try {
+    // Logic to fetch all courses from the database
+    const result = await pool.request().query("SELECT * FROM FactoryMaster");
+    res.json(result.recordset);
+  } catch (error) {
+    console.error("Error fetching Location:", error.message);
+    res.status(500).json({ error: "Error fetching Location" });
+  }
+};
+
+
+
+
 export const UpdateOthers = async (req, res) => {
   try {
     const {
@@ -90,6 +104,7 @@ export const UpdateOthers = async (req, res) => {
           NearByPin2=@NearByPin2,
           NearByPhNo2=@NearByPhNo2,
           NearByTaluk2=@NearByTaluk2
+        
       WHERE AppId = @AppId;
     `;
 
