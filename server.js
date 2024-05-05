@@ -5,6 +5,7 @@ import QulificationRoutes from "./Router/employe/QulificationRoute.js"
 import ExperienceRoutes from "./Router/employe/ExperienceRoutes.js"
 import familyRoutes from "./Router/employe/FamilyRoute.js"
 import OtherRoutes from "./Router/employe/OthersRoute.js"
+import uploadRoutes from "./Router/employe/UploadeRoutes.js"
 import morgan from "morgan";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -37,6 +38,7 @@ app.use("/api/v1/Qlf",QulificationRoutes)
 app.use("/api/v1/expc",ExperienceRoutes)
 app.use("/api/v1/fam", familyRoutes);
 app.use("/api/v1/other",OtherRoutes)
+app.use("/api/v1/uploads",uploadRoutes)
 
 
 const PORT = process.env.PORT || 3000;
