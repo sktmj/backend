@@ -14,7 +14,7 @@ export const getlanguages = async (req,res)=>{
 export const FamilyDetails = async (req, res) => {
   try {
     console.log("Received request:", req.method, req.url);
-    console.log("Request body:", req.body);
+    console.log("Received request body:", req.body);
 
     const { Relation, Name, Age, Work, MonthSalary, PhoneNo } = req.body;
     const AppId = req.session.AppId;
@@ -56,6 +56,8 @@ export const FamilyDetails = async (req, res) => {
 
 export const LanguaguesController = async (req, res) => {
     try {
+      console.log("Received request:", req.method, req.url);
+    console.log("Received request body:", req.body);
         const { LanId,LanSpeak,LanRead,LanWrite } = req.body;
        // Retrieve the AppId associated with the logged-in user from the session
     const AppId = req.session.AppId;

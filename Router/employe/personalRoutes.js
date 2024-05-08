@@ -9,6 +9,7 @@ import {
   getReligionController,
   getCastesByReligion,
 } from "../../Controller/PersonalController.js";
+import { UpdateDeclaration } from "../../Controller/Declaration.js";
 
 
 const router = express.Router();
@@ -22,6 +23,7 @@ router.get("/districts/:stateId", getDistrictsByStateId);
 router.get('/taluk/:districtId', getTaluksByDistrictId);
 router.get('/city/:talukId', getCitiesByTalukId);
 router.post('/updatePersonalDetails', personlController);
+router.post("/declaration", UpdateDeclaration);
 
 
 export default router;

@@ -10,9 +10,7 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-const JWT_KEY = "jsjsjsjsjsj"
-
-console.log(JWT_KEY , "vickyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+const JWT_KEY = "your_secret_key_here"; // Corrected JWT_KEY definition
 
 const insertDataIntoDB = async (MobileNo, AppName, Passwrd, UserName) => {
   try {
@@ -34,7 +32,6 @@ const insertDataIntoDB = async (MobileNo, AppName, Passwrd, UserName) => {
     throw error;
   }
 };
-
 // Temporary storage for OTPs
 const otpStorage = {};
 
@@ -49,12 +46,11 @@ const generateOTP = () => {
 };
 
 // Function to generate JWT token
-const generateJWT = (AppID) => {
-  return jwt.sign({ AppID }, JWT_KEY, {
-    expiresIn: "10d",
+const generateJWT = (userName, AppId) => {
+  return jwt.sign({ userName, AppId }, JWT_KEY, {
+    expiresIn: "10d", // Set expiration time to 10 days
   });
 };
-
 // Route controller for signing up
 export const signUp = async (req, res) => {
   try {
@@ -72,7 +68,7 @@ export const signUp = async (req, res) => {
       const AppID = generateUniqueAppID();
 
       // Generate JWT token with AppID
-      const token = generateJWT(AppID);
+      const token = generateJWT(AppName, AppID);
 
       res.json({ token, msg: "OTP generated successfully" });
     } else {
@@ -112,7 +108,7 @@ export const verifyOTP = async (req, res) => {
     const AppID = generateUniqueAppID();
 
     // Generate JWT token with AppID
-    const token = generateJWT(AppID);
+    const token = generateJWT(AppName, AppID);
 
     res.json({ token, msg: "Signup successful" });
   } catch (error) {
@@ -122,17 +118,33 @@ export const verifyOTP = async (req, res) => {
 };
 
 export const verifyToken = (req, res, next) => {
-  const token = req.header("Authorization");
-  if (!token)
-    return res.status(401).json({ error: "Access denied. No token provided." });
-
   try {
-    const decoded = jwt.verify(token, JWT_KEY);
-    req.user = decoded.user;
+    // Retrieve the token from the request headers
+    const token = req.headers.authorization;
+
+    if (!token || !token.startsWith("Bearer ")) {
+      return res.status(401).json({ success: false, message: "Invalid token format" });
+    }
+
+    // Extract the token from the "Bearer " string
+    const tokenWithoutBearer = token.split(" ")[1];
+
+    // Verify and decode the token
+    const decodedToken = jwt.verify(tokenWithoutBearer,JWT_KEY);
+
+    // Check if the decoded token contains the required fields
+    if (!decodedToken.userName || !decodedToken.AppId) {
+      throw new Error("Invalid token contents");
+    }
+
+    // Set decoded user object to req.user
+    req.user = decodedToken;
+
+    // Move to the next middleware
     next();
   } catch (error) {
     console.error("Error verifying token:", error.message);
-    res.status(401).json({ error: "Invalid token" });
+    return res.status(401).json({ success: false, message: "Invalid token" });
   }
 };
 
@@ -158,17 +170,14 @@ export const login = async (req, res) => {
     const user = result.recordset[0];
     const { AppId } = user; // Extract AppId from user data
 
-    // Store AppId in the user session
-    req.session.AppId = AppId;
-
     // Log UserName and AppId to the console
     console.log("UserName:", user.UserName);
     console.log("AppId:", AppId);
 
     // Generate JWT token
-    const token = jwt.sign({ userName: user.UserName, AppId }, JWT_KEY);
+    const token = generateJWT(UserName, AppId);
 
-    res.status(200).json({ token });
+    res.status(200).json({ message: "Login successful", token, AppId });
   } catch (error) {
     console.error("Error logging in:", error.message);
     res.status(500).json({ error: "Internal server error" });

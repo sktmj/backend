@@ -24,9 +24,11 @@ export const getDesignation = async (req,res)=>{
 
 
 export const InsertExperience = async (req, res) => {
+    console.log(req.headers.authorization.split(' ')[1])
+
     try {
         const { CompName, Designation, Duration, LastSalary, RelieveReason, RefPerson, PhoneNo, FrmMnth, FrmYr, ToMnth, ToYr, InitSalary, LastCompany } = req.body;
-        const AppId = req.session.AppId;
+        const AppId = req.headers.authorization.split(' ')[1];
         
         if (!AppId) {
             return res.status(404).json({ success: false, message: "AppId not found in session" });
@@ -66,12 +68,14 @@ export const InsertExperience = async (req, res) => {
         console.error("Error inserting AppExperience:", error.message);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
-};
+ };
 
  export const UpdateWorkExperience = async (req, res) => {
+
+    console.log(req.headers.authorization.split(' ')[1])
     try {
         const { WorkCompany, RelieveReason, EPFNO, UANNO, RegExpExNo, SalesExp, HealthIssue, IsDriving, LicenseNo, IsCompWrkHere, CarLicense } = req.body;
-        const AppId = req.session.AppId;
+        const AppId = req.headers.authorization.split(' ')[1];
 
         if (!AppId) {
             return res.status(404).json({ success: false, message: "AppId not found in session" });

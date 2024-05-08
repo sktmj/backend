@@ -4,7 +4,7 @@ import pool from "../config/db.js";
 import { config } from "../config/db.js";
 import jwt from "jsonwebtoken";
 import { getType } from './../helper/PersonalHelper.js';
-const JWT_KEY = "jsjsjsjsjsj"
+const JWT_KEY = "your_secret_key_here"
 
 export const getReligionController = async (req, res) => {
   try {
