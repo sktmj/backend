@@ -222,3 +222,37 @@ const isValidField = (fieldName) => {
   ];
   return validFields.includes(fieldName);
 };
+
+
+
+
+export const getPresentAllCountries = (req, res) => {
+  // Logic to fetch all countries from the database
+  pool
+    .request()
+    .query("SELECT * FROM Countries_master")
+    .then((result) => {
+      res.json(result.recordset);
+    })
+    .catch((err) => {
+      console.error("Error fetching countries:", err);
+      res.status(500).json({ error: "Error fetching countries" });
+    });
+};
+
+// controllers/stateController.js
+export const getPresentStatesByCountryId = (req, res) => {
+  // Logic to fetch states by country ID from the database
+  const { countryId } = req.params;
+  pool
+    .request()
+    .input("countryId", sql.Int, countryId)
+    .query("SELECT * FROM States_master WHERE country_gid = @countryId")
+    .then((result) => {
+      res.json(result.recordset);
+    })
+    .catch((err) => {
+      console.error("Error fetching states:", err);
+      res.status(500).json({ error: "Error fetching states" });
+    });
+};

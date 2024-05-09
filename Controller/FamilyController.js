@@ -12,17 +12,16 @@ export const getlanguages = async (req,res)=>{
 }
 
 export const FamilyDetails = async (req, res) => {
+  console.log( req.headers.authorization.split(' ')[1])
   try {
-    console.log("Received request:", req.method, req.url);
-    console.log("Received request body:", req.body);
+ 
 
     const { Relation, Name, Age, Work, MonthSalary, PhoneNo } = req.body;
-    const AppId = req.session.AppId;
-
+    const AppId = req.headers.authorization.split(' ')[1];
+        
     if (!AppId) {
-      return res.status(404).json({ success: false, message: "AppId not found in session" });
+        return res.status(404).json({ success: false, message: "AppId not found in session" });
     }
-
     const query = `
       INSERT INTO AppFamilyDtl (AppId, Relation, Name, Age, Work, MonthSalary, PhoneNo)
       VALUES (@AppId, @Relation, @Name, @Age, @Work, @MonthSalary, @PhoneNo)
@@ -55,17 +54,16 @@ export const FamilyDetails = async (req, res) => {
   
 
 export const LanguaguesController = async (req, res) => {
+  console.log( req.headers.authorization.split(' ')[1])
     try {
-      console.log("Received request:", req.method, req.url);
-    console.log("Received request body:", req.body);
+   
         const { LanId,LanSpeak,LanRead,LanWrite } = req.body;
        // Retrieve the AppId associated with the logged-in user from the session
-    const AppId = req.session.AppId;
-
-    // Check if AppId is undefined or not found in the session
-    if (!AppId) {
-      return res.status(404).json({ success: false, message: "AppId not found in session" });
-    }
+       const AppId = req.headers.authorization.split(' ')[1];
+        
+       if (!AppId) {
+           return res.status(404).json({ success: false, message: "AppId not found in session" });
+       }
 
     // SQL query to insert values into AppQualification
     const query = `

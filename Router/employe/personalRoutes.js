@@ -8,6 +8,8 @@ import {
   personlController,
   getReligionController,
   getCastesByReligion,
+  getPresentAllCountries,
+  getPresentStatesByCountryId,
 } from "../../Controller/PersonalController.js";
 import { UpdateDeclaration } from "../../Controller/Declaration.js";
 
@@ -24,6 +26,7 @@ router.get('/taluk/:districtId', getTaluksByDistrictId);
 router.get('/city/:talukId', getCitiesByTalukId);
 router.post('/updatePersonalDetails', personlController);
 router.post("/declaration", UpdateDeclaration);
-
+router.get("/presentCountries",getPresentAllCountries)
+router.get("/PresentState/:countryId",getPresentStatesByCountryId)
 
 export default router;
