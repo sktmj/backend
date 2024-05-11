@@ -3,8 +3,8 @@ import sql from "mssql";
 import pool from "../config/db.js";
 import { config } from "../config/db.js";
 import jwt from "jsonwebtoken";
-import { getType } from './../helper/PersonalHelper.js';
-const JWT_KEY = "your_secret_key_here"
+import { getType } from "./../helper/PersonalHelper.js";
+const JWT_KEY = "your_secret_key_here";
 
 export const getReligionController = async (req, res) => {
   try {
@@ -41,9 +41,6 @@ export const getCastesByReligion = async (req, res) => {
     res.status(500).json({ error: "Error fetching castes by religion" });
   }
 };
-
-
-
 
 export const getAllCountries = (req, res) => {
   // Logic to fetch all countries from the database
@@ -127,104 +124,238 @@ export const getCitiesByTalukId = (req, res) => {
     });
 };
 
-export const personlController = async (req, res) => {
+export const  personlController = async (req, res) => {
   try {
-    const token = req.headers.authorization.split(' ')[1]; // Extract token from Authorization header
-    const decodedToken = jwt.verify(token, JWT_KEY); // Verify and decode JWT token
+    const {
+      AppName,
+      FatherName,
+      DOB,
+      Gender,
+      BloodGrp,
+      Martialstatus,
+      MarriageDate,
+      Religion,
+      CasteId,
+      Nativity,
+      ResAddress1,
+      ResCountryId,
+      ResStateId,
+      ResDistrictId,
+      ResTalukId,
+      ResCityId,
+      ResPincode,
+      ResPhoneNo,
+      PerAddress1,
+      PerCountryId,
+      PerStateId,
+      PerDistrictId,
+      PerTalukId,
+      PerCityId,
+      PerPincode,
+      PerPhoneNo,
+      LandMark,
+      EmailId,
+      PANNO,
+      AadharNo,
+    } = req.body;
+    const AppId = req.headers.authorization.split(" ")[1];
 
-    if (!decodedToken) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+    if (!AppId) {
+      return res
+        .status(404)
+        .json({ success: false, message: "AppId not found in session" });
     }
-
-    const { userName } = decodedToken;
-    const queryParams = req.body;
-
-    let setStatements = "";
-    const inputParams = [];
-
-    for (const [key, value] of Object.entries(queryParams)) {
-      // Exclude fields that are not part of the ApplicationForm table
-      if (value !== undefined && isValidField(key)) { 
-        setStatements += `${key} = @${key}, `;
-        inputParams.push({ name: key, type: getType(value), value });
-      }
-    }
-
-    if (setStatements === "") {
-      return res.status(400).json({ success: false, message: "No fields provided for update" });
-    }
-
-    setStatements = setStatements.slice(0, -2);
 
     const query = `
-      UPDATE ApplicationForm
-      SET
-        ${setStatements}
-      WHERE UserName = @UserName
+    UPDATE ApplicationForm
+    SET AppName = @AppName,
+    FatherName = @FatherName,
+    DOB = @DOB,
+    Gender = @Gender,
+    BloodGrp = @BloodGrp,
+    Martialstatus = @Martialstatus,
+    MarriageDate = @MarriageDate,
+    Religion = @Religion,
+    CasteId = @CasteId,
+    Nativity = @Nativity,
+    ResAddress1 = @ResAddress1,
+    ResCountryId = @ResCountryId,
+    ResStateId = @ResStateId,
+    ResDistrictId = @ResDistrictId,
+    ResTalukId = @ResTalukId,
+    ResPincode = @ResPincode,
+    ResCityId = @ResCityId,
+    ResPhoneNo = @ResPhoneNo,
+    PerAddress1 = @PerAddress1,
+    PerCountryId = @PerCountryId,
+    PerStateId = @PerStateId,
+    PerDistrictId = @PerDistrictId,
+    PerTalukId = @PerTalukId,
+    PerCityId = @PerCityId,
+    PerPincode = @PerPincode,
+    PerPhoneNo = @PerPhoneNo,
+    EmailId = @EmailId,
+    PANNO = @PANNO,
+    LandMark = @LandMark,
+    AadharNo = @AadharNo
+    WHERE AppId = @AppId;
     `;
 
     const request = pool.request();
-    inputParams.forEach((param) =>
-      request.input(param.name, param.type, param.value)
-    );
-    request.input("UserName", sql.NVarChar, userName);
+
+    request.input("AppName", AppName);
+    request.input("FatherName", FatherName);
+    request.input("DOB", DOB);
+    request.input("Gender", Gender);
+    request.input("BloodGrp", BloodGrp);
+    request.input("Martialstatus", Martialstatus);
+    request.input("MarriageDate", MarriageDate);
+    request.input("Religion", Religion);
+    request.input("CasteId", CasteId);
+    request.input("Nativity", Nativity);
+    request.input("ResAddress1", ResAddress1);
+    request.input("ResCountryId", ResCountryId);
+    request.input("ResTalukId", ResTalukId);
+    request.input("ResStateId", ResStateId);
+    request.input("ResDistrictId", ResDistrictId);
+    request.input("ResPincode", ResPincode);
+    request.input("ResCityId", ResCityId);
+    request.input("ResPhoneNo", ResPhoneNo);
+    request.input("PerAddress1", PerAddress1);
+    request.input("PerCountryId", PerCountryId);
+    request.input("PerStateId", PerStateId);
+    request.input("PerDistrictId", PerDistrictId);
+    request.input("PerTalukId", PerTalukId);
+    request.input("PerCityId", PerCityId);
+    request.input("PerPincode", PerPincode);
+    request.input("PerPhoneNo", PerPhoneNo);
+    request.input("EmailId", EmailId);
+    request.input("PANNO", PANNO);
+    request.input("LandMark", LandMark);
+    request.input("AadharNo", AadharNo);
+    request.input("AppId", AppId);
 
     const result = await request.query(query);
 
+    // Check if any rows were affected
     if (result.rowsAffected[0] > 0) {
-      res.status(200).json({
-        success: true,
-        message: "Personal details updated successfully",
-      });
+      console.log("Personal Details updated successfully");
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: "Personal Details updated successfully",
+        });
     } else {
-      res.status(404).json({ success: false, message: "Application form not found" });
+      console.error("Failed to update work experience");
+      res
+        .status(404)
+        .json({ success: false, message: "Failed to update Personal Details" });
     }
   } catch (error) {
-    console.error("Error updating ApplicationForm:", error.message);
+    console.error("Error updating Personal Details:", error.message);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+// export const personlController = async (req, res) => {
+//   try {
+//     const token= req.headers.authorization.split(' ')[1];
 
-// Helper function to check if a field is valid in ApplicationForm
-const isValidField = (fieldName) => {
-  const validFields = [
-    // List all valid fields from the ApplicationForm table here
-    "AppName",
-    "FatherName",
-    "DOB",
-    "Gender",
-    "BloodGrp",
-    "Martialstatus",
-    "MarriageDate",
-    "Religion",
-    "CasteId",
-    "Nativity",
-    "ResAddress1",
-    "ResCountryId",
-    "ResStateId",
-    "ResDistrictId",
-    "ResTalukId",
-    "ResCityId",
-    "ResPincode",
-    "ResPhoneNo",
-    "PerAddress1",
-    "PerCountryId",
-    "PerStateId",
-    "PerDistrictId",
-    "PerTalukId",
-    "PerCityId",
-    "PerPincode",
-    "PerPhoneNo",
-    "LandMark",
-    "EmailId",
-    "PANNO",
-    "AadharNo"
-  ];
-  return validFields.includes(fieldName);
-};
+//     if (!token) {
+//         return res.status(404).json({ success: false, message: "AppId not found in session" });
+//     }
+//     const decodedToken = jwt.verify(token, JWT_KEY); // Verify and decode JWT token
 
+//     if (!decodedToken) {
+//       return res.status(401).json({ success: false, message: "Unauthorized" });
+//     }
 
+//     const { AppId } = decodedToken;
+//     const queryParams = req.body;
 
+//     let setStatements = "";
+//     const inputParams = [];
+
+//     for (const [key, value] of Object.entries(queryParams)) {
+//       // Exclude fields that are not part of the ApplicationForm table
+//       if (value !== undefined && isValidField(key)) {
+//         setStatements += `${key} = @${key}, `;
+//         inputParams.push({ name: key, type: getType(value), value });
+//       }
+//     }
+
+//     if (setStatements === "") {
+//       return res.status(400).json({ success: false, message: "No fields provided for update" });
+//     }
+
+//     setStatements = setStatements.slice(0, -2);
+
+//     const query = `
+//       UPDATE ApplicationForm
+//       SET
+//         ${setStatements}
+//       WHERE AppId = @AppId
+//     `;
+
+//     const request = pool.request();
+//     inputParams.forEach((param) =>
+//       request.input(param.name, param.type, param.value)
+//     );
+//     request.input("AppId", sql.Int, AppId);
+
+//     const result = await request.query(query);
+
+//     if (result.rowsAffected[0] > 0) {
+//       res.status(200).json({
+//         success: true,
+//         message: "Personal details updated successfully",
+//       });
+//     } else {
+//       res.status(404).json({ success: false, message: "Application form not found" });
+//     }
+//   } catch (error) {
+//     console.error("Error updating ApplicationForm:", error.message);
+//     res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// };
+
+// // Helper function to check if a field is valid in ApplicationForm
+// const isValidField = (fieldName) => {
+//   const validFields = [
+//     // List all valid fields from the ApplicationForm table here
+//     "AppName",
+//     "FatherName",
+//     "DOB",
+//     "Gender",
+//     "BloodGrp",
+//     "Martialstatus",
+//     "MarriageDate",
+//     "Religion",
+//     "CasteId",
+//     "Nativity",
+//     "ResAddress1",
+//     "ResCountryId",
+//     "ResStateId",
+//     "ResDistrictId",
+//     "ResTalukId",
+//     "ResCityId",
+//     "ResPincode",
+//     "ResPhoneNo",
+//     "PerAddress1",
+//     "PerCountryId",
+//     "PerStateId",
+//     "PerDistrictId",
+//     "PerTalukId",
+//     "PerCityId",
+//     "PerPincode",
+//     "PerPhoneNo",
+//     "LandMark",
+//     "EmailId",
+//     "PANNO",
+//     "AadharNo"
+//   ];
+//   return validFields.includes(fieldName);
+// };
 
 export const getPresentAllCountries = (req, res) => {
   // Logic to fetch all countries from the database

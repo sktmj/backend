@@ -9,12 +9,14 @@ export const getLocation= async (req, res) => {
     console.error("Error fetching Location:", error.message);
     res.status(500).json({ error: "Error fetching Location" });
   }
-};
+}
 
 
 
 
 export const UpdateOthers = async (req, res) => {
+ 
+
   try {
     const {
       CurrentSalary,
@@ -56,8 +58,12 @@ export const UpdateOthers = async (req, res) => {
       NearByPhNo2,
       NearByTaluk2,
     } = req.body;
-    const AppId = req.session.AppId;
 
+    console.log(CurrentSalary,"ccccc")
+    console.log(ExpectSalary,"aaaaa")
+    console.log(KnowCompany,"gggg")
+    const AppId = req.headers.authorization.split(" ")[1];
+console.log(AppId)
     if (!AppId) {
       return res
         .status(404)
@@ -151,6 +157,7 @@ export const UpdateOthers = async (req, res) => {
     request.input("AppId", AppId);
 
     await request.query(query);
+    console.log(CurrentSalary,"sdhfsdjf")
 
     res.status(200).json({
       success: true,
