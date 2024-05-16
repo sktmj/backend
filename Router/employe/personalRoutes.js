@@ -10,6 +10,7 @@ import {
   getCastesByReligion,
   getPresentAllCountries,
   getPresentStatesByCountryId,
+  getPersonalDetails,
 } from "../../Controller/PersonalController.js";
 import { UpdateDeclaration } from "../../Controller/Declaration.js";
 
@@ -28,5 +29,6 @@ router.post('/updatePersonalDetails', personlController);
 router.post("/declaration", UpdateDeclaration);
 router.get("/presentCountries",getPresentAllCountries)
 router.get("/PresentState/:countryId",getPresentStatesByCountryId)
+router.get("/getPrsl",getPersonalDetails)
 
 export default router;

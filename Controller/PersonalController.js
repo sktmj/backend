@@ -257,105 +257,8 @@ export const  personlController = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-// export const personlController = async (req, res) => {
-//   try {
-//     const token= req.headers.authorization.split(' ')[1];
 
-//     if (!token) {
-//         return res.status(404).json({ success: false, message: "AppId not found in session" });
-//     }
-//     const decodedToken = jwt.verify(token, JWT_KEY); // Verify and decode JWT token
 
-//     if (!decodedToken) {
-//       return res.status(401).json({ success: false, message: "Unauthorized" });
-//     }
-
-//     const { AppId } = decodedToken;
-//     const queryParams = req.body;
-
-//     let setStatements = "";
-//     const inputParams = [];
-
-//     for (const [key, value] of Object.entries(queryParams)) {
-//       // Exclude fields that are not part of the ApplicationForm table
-//       if (value !== undefined && isValidField(key)) {
-//         setStatements += `${key} = @${key}, `;
-//         inputParams.push({ name: key, type: getType(value), value });
-//       }
-//     }
-
-//     if (setStatements === "") {
-//       return res.status(400).json({ success: false, message: "No fields provided for update" });
-//     }
-
-//     setStatements = setStatements.slice(0, -2);
-
-//     const query = `
-//       UPDATE ApplicationForm
-//       SET
-//         ${setStatements}
-//       WHERE AppId = @AppId
-//     `;
-
-//     const request = pool.request();
-//     inputParams.forEach((param) =>
-//       request.input(param.name, param.type, param.value)
-//     );
-//     request.input("AppId", sql.Int, AppId);
-
-//     const result = await request.query(query);
-
-//     if (result.rowsAffected[0] > 0) {
-//       res.status(200).json({
-//         success: true,
-//         message: "Personal details updated successfully",
-//       });
-//     } else {
-//       res.status(404).json({ success: false, message: "Application form not found" });
-//     }
-//   } catch (error) {
-//     console.error("Error updating ApplicationForm:", error.message);
-//     res.status(500).json({ success: false, message: "Internal server error" });
-//   }
-// };
-
-// // Helper function to check if a field is valid in ApplicationForm
-// const isValidField = (fieldName) => {
-//   const validFields = [
-//     // List all valid fields from the ApplicationForm table here
-//     "AppName",
-//     "FatherName",
-//     "DOB",
-//     "Gender",
-//     "BloodGrp",
-//     "Martialstatus",
-//     "MarriageDate",
-//     "Religion",
-//     "CasteId",
-//     "Nativity",
-//     "ResAddress1",
-//     "ResCountryId",
-//     "ResStateId",
-//     "ResDistrictId",
-//     "ResTalukId",
-//     "ResCityId",
-//     "ResPincode",
-//     "ResPhoneNo",
-//     "PerAddress1",
-//     "PerCountryId",
-//     "PerStateId",
-//     "PerDistrictId",
-//     "PerTalukId",
-//     "PerCityId",
-//     "PerPincode",
-//     "PerPhoneNo",
-//     "LandMark",
-//     "EmailId",
-//     "PANNO",
-//     "AadharNo"
-//   ];
-//   return validFields.includes(fieldName);
-// };
 
 export const getPresentAllCountries = (req, res) => {
   // Logic to fetch all countries from the database
@@ -387,3 +290,89 @@ export const getPresentStatesByCountryId = (req, res) => {
       res.status(500).json({ error: "Error fetching states" });
     });
 };
+// const verifyAndDecodeToken = (token) => {
+//   try {
+//     // Decode the token
+//     const decodedToken = jwt.verify(token, JWT_KEY);
+//     const { AppId } = decodedToken;
+//     return { AppId };
+//   } catch (error) {
+//     throw new Error('Token verification failed'); // Throw an error if token verification fails
+//   }
+// };
+export const  getPersonalDetails = async (req, res) => {
+  console.log(req.headers.authorization.split(' ')[1],"hiiiiiii")
+  try {
+    const AppId = req.headers.authorization.split(' ')[1];
+    
+    if (!AppId) {
+      return res.status(404).json({ success: false, message: "AppId not found in session" });
+    }
+
+    const query = `
+      SELECT *
+      FROM ApplicationForm
+      WHERE AppId = @AppId
+    `;
+
+    const request = pool.request();
+    request.input("AppId", AppId);
+
+    const result = await request.query(query);
+
+    if (result.recordset.length > 0) {
+      console.log("AppQualifications retrieved successfully");
+      res.status(200).json({ success: true, data: result.recordset });
+    } else {
+      console.error("No AppQualifications found for the given AppId");
+      res.status(404).json({ success: false, message: "No AppQualifications found" });
+    }
+  } catch (error) {
+    console.error("Error fetching AppQualifications:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+    // Check if authorization header exists
+//     if (!req.headers.authorization) {
+//       return res.status(401).json({ success: false, message: "Unauthorized" });
+//     }
+
+//     // Split authorization header and extract token
+//     const token = req.headers.authorization.split(" ")[1];
+//     if (!token) {
+//       return res.status(401).json({ success: false, message: "Unauthorized" });
+//     }
+
+//     let AppId;
+//     try {
+//       // Verify and decode the token to get the AppId
+//       const decodedToken = verifyAndDecodeToken(token);
+//       AppId = decodedToken.AppId;
+//     } catch (error) {
+//       console.error("Error verifying token:", error.message);
+//       return res.status(401).json({ success: false, message: "Token verification failed" });
+//     }
+
+//     // Query to fetch user details using the AppId
+//     const query = `
+//       SELECT * FROM ApplicationForm WHERE AppId = @AppId;
+//     `;
+
+//     const request = pool.request();
+
+//     request.input("AppId", AppId);
+
+//     const result = await request.query(query);
+
+//     if (result.recordset.length > 0) {
+//       const userDetails = result.recordset[0];
+//       res.status(200).json({ success: true, data: userDetails });
+//     } else {
+//       res.status(404).json({ success: false, message: "User details not found" });
+//     }
+//   } catch (error) {
+//     console.error("Error fetching user details:", error.message);
+//     res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// };
