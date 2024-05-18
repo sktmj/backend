@@ -181,3 +181,39 @@ export const uploadCarLicenseDoc = (req, res) => {
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
+
+export const  getExperience = async (req, res) => {
+    console.log(req.headers.authorization.split(' ')[1],"hsssss")
+    try {
+      const AppId = req.headers.authorization.split(' ')[1];
+      
+      if (!AppId) {
+        return res.status(404).json({ success: false, message: "AppId not found in session" });
+      }
+  
+      const query = `
+        SELECT *
+        FROM AppWorkExp
+        WHERE AppId = @AppId
+      `;
+  
+      const request = pool.request();
+      request.input("AppId", AppId);
+  
+      const result = await request.query(query);
+  
+      if (result.recordset.length > 0) {
+        console.log("Experience retrieved successfully");
+        res.status(200).json({ success: true, data: result.recordset });
+      } else {
+        console.error("No AppExperience found for the given AppId");
+        res.status(404).json({ success: false, message: "No AppExperience found" });
+      }
+    } catch (error) {
+      console.error("Error fetching AppExperience:", error.message);
+      res.status(500).json({ success: false, message: "Internal server error" });
+    }
+  };
+  
+  
