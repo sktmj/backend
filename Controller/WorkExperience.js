@@ -21,6 +21,7 @@ export const getDesignation = async (req,res)=>{
 }
 
 
+  
 
 
 export const InsertExperience = async (req, res) => {
@@ -35,7 +36,8 @@ export const InsertExperience = async (req, res) => {
         }
 
         const query = `INSERT INTO AppWorkExp (CompName, Designation, Duration, LastSalary, RelieveReason, RefPerson, PhoneNo, FrmMnth, FrmYr, ToMnth, ToYr, InitSalary, LastCompany, AppId)
-                       VALUES (@CompName, @Designation, @Duration, @LastSalary, @RelieveReason, @RefPerson, @PhoneNo, @FrmMnth, @FrmYr, @ToMnth, @ToYr, @InitSalary, @LastCompany, @AppId)`;
+        OUTPUT INSERTED.ExpId
+        VALUES (@CompName, @Designation, @Duration, @LastSalary, @RelieveReason, @RefPerson, @PhoneNo, @FrmMnth, @FrmYr, @ToMnth, @ToYr, @InitSalary, @LastCompany, @AppId)`;
                    
         const request = pool.request();
 
@@ -53,28 +55,31 @@ export const InsertExperience = async (req, res) => {
         request.input("InitSalary", InitSalary || 0); // Default to 0 if InitSalary is null
         request.input("LastCompany", LastCompany);
         request.input("AppId", AppId);
-        
         const result = await request.query(query);
-
         // Check if any rows were affected
-        if (result.rowsAffected[0] > 0) {
-            console.log("AppWorkExp inserted successfully");
-            res.status(200).json({ success: true, message: "AppExperience inserted successfully" });
-        } else {
-            console.error("Failed to insert AppExperience");
-            res.status(404).json({ success: false, message: "Failed to insert AppExperience" });
+        if (result.recordset.length > 0) {
+            const ExpId = result.recordset[0].ExpId;
+            req.session.ExpId = ExpId;
+            console.log("Experience inserted successfully with ExpId:", ExpId);
+            res.status(200).json({ success: true, message: "Experience  inserted successfully",ExpId });
+          } else {
+            console.error("Failed to insert Experience ");
+            res.status(404).json({ success: false, message: "Failed to insertExperience" });
+          }
+        } catch (error) {
+          console.error("Error inserting Experience :", error.message);
+          res.status(500).json({ success: false, message: "Internal server error" });
         }
-    } catch (error) {
-        console.error("Error inserting AppExperience:", error.message);
-        res.status(500).json({ success: false, message: "Internal server error" });
-    }
- };
+      };
 
  export const UpdateWorkExperience = async (req, res) => {
+    console.log(req.body,"jsssss")
 
     try {
-        const { WorkCompany, RelieveReason, EPFNO, UANNO, RegExpExNo, SalesExp, HealthIssue, IsDriving, LicenseNo, IsCompWrkHere, CarLicense } = req.body;
+        const {ExpId, WorkCompany, RelieveReason, EPFNO, UANNO, RegExpExNo, SalesExp, HealthIssue, IsDriving, LicenseNo, IsCompWrkHere, CarLicense } = req.body;
+        console.log(ExpId,'hshshs')
         const AppId = req.headers.authorization.split(' ')[1];
+
         
         if (!AppId) {
             return res.status(404).json({ success: false, message: "AppId not found in session" });
@@ -93,12 +98,11 @@ export const InsertExperience = async (req, res) => {
         LicenseNo = @LicenseNo,
         IsCompWrkHere = @IsCompWrkHere,
         CarLicense = @CarLicense
-    WHERE AppId = @AppId;
+    WHERE AppId = @AppId AND ExpId = @ExpId
 `;
-
        
         const request = pool.request();
-
+         request.input("ExpId",ExpId)
         request.input("WorkCompany", WorkCompany);
         request.input("RelieveReason", RelieveReason);
         request.input("EPFNO", EPFNO);
@@ -216,4 +220,91 @@ export const  getExperience = async (req, res) => {
     }
   };
   
+  export const updateAppExperience = async (req, res) => {
+    console.log(req.body,"jsssss")
+    try {
+      // Destructuring request body
+      const { ExpId, CompName, Designation, Duration,LastSalary,RelieveReason,RefPerson,PhoneNo,FrmMnth,FrmYr,ToMnth,ToYr,InitSalary,LastCompany} = req.body;
+    console.log( ExpId,"jajajajajajaj")
+      // Extracting AppId from authorization header
+      const AppId = req.headers.authorization?.split(' ')[1];
+    
+      // Checking if AppId exists
+      if (!AppId) {
+        return res.status(401).json({ success: false, message: "Unauthorized: AppId not found in session" });
+      }
+    
+      // Updating query
+      const query = `
+      UPDATE AppWorkExp
+      SET CompName= @CompName, Designation = @Designation,  Duration = @Duration,
+      LastSalary = @LastSalary,RelieveReason= @RelieveReason,RefPerson= @RefPerson,PhoneNo = @PhoneNo,FrmMnth = @FrmMnth,FrmYr =@FrmYr, ToMnth = @ToMnth,ToYr = @ToYr,InitSalary = @InitSalary,LastCompany= @LastCompany
+      WHERE AppId = @AppId AND ExpId= @ExpId;
+    `;
+    
+      // Executing the query
+      const result = await pool.request()
+      .input("AppId", AppId)
+      .input("ExpId", ExpId ) // Ensure AppQualId is properly passed
+      .input("CompName",  CompName)
+      .input("Designation", Designation)
+      .input("Duration", Duration)
+      .input("LastSalary", LastSalary)
+      .input("RefPerson",RefPerson)
+      .input("RelieveReason", RelieveReason)
+      .input("PhoneNo", PhoneNo)
+      .input("FrmMnth", FrmMnth)
+      .input("FrmYr",FrmYr)
+      .input("ToMnth", ToMnth)
+      .input("ToYr", ToYr)
+      .input("InitSalary", InitSalary )
+      .input("LastCompany",LastCompany)
+
+      .query(query);
+      // Checking if any row was affected
+      if (result.rowsAffected[0] > 0) {
+        console.log("Experience updated successfully");
+        res.status(200).json({ success: true, message: "Experience updated successfully" });
+      } else {
+        console.error("Failed to update Experience");
+        res.status(404).json({ success: false, message: "Failed to update Experience: Record not found" });
+      }
+    } catch (error) {
+      console.error("Error updating Experience:", error.message);
+      res.status(500).json({ success: false, message: "Internal server error" });
+    }
+    };
+    
   
+  
+    export const  getExperienceDetails = async (req, res) => {
+        try {
+          const AppId = req.headers.authorization.split(' ')[1];
+          
+          if (!AppId) {
+            return res.status(404).json({ success: false, message: "AppId not found in session" });
+          }
+      
+          const query = `
+            SELECT *
+            FROM ApplicationForm
+            WHERE AppId = @AppId
+          `;
+      
+          const request = pool.request();
+          request.input("AppId", AppId);
+      
+          const result = await request.query(query);
+      
+          if (result.recordset.length > 0) {
+            console.log("AppQualifications retrieved successfully");
+            res.status(200).json({ success: true, data: result.recordset });
+          } else {
+            console.error("No AppQualifications found for the given AppId");
+            res.status(404).json({ success: false, message: "No AppQualifications found" });
+          }
+        } catch (error) {
+          console.error("Error fetching AppQualifications:", error.message);
+          res.status(500).json({ success: false, message: "Internal server error" });
+        }
+      };
