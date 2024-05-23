@@ -15,8 +15,7 @@ export const getLocation= async (req, res) => {
 
 
 export const UpdateOthers = async (req, res) => {
- 
-
+console.log(req.body,"jjjjjjjj")
   try {
     const {
       CurrentSalary,
@@ -59,9 +58,7 @@ export const UpdateOthers = async (req, res) => {
       NearByTaluk2,
     } = req.body;
 
-    console.log(CurrentSalary,"ccccc")
-    console.log(ExpectSalary,"aaaaa")
-    console.log(KnowCompany,"gggg")
+
     const AppId = req.headers.authorization.split(" ")[1];
 console.log(AppId)
     if (!AppId) {
@@ -110,7 +107,6 @@ console.log(AppId)
           NearByPin2=@NearByPin2,
           NearByPhNo2=@NearByPhNo2,
           NearByTaluk2=@NearByTaluk2
-        
       WHERE AppId = @AppId;
     `;
 
@@ -157,7 +153,7 @@ console.log(AppId)
     request.input("AppId", AppId);
 
     await request.query(query);
-    console.log(CurrentSalary,"sdhfsdjf")
+  
 
     res.status(200).json({
       success: true,
@@ -165,6 +161,43 @@ console.log(AppId)
     });
   } catch (error) {
     console.error("Error updating Other Details:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+export const getOtherDetails = async (req, res) => {
+  try {
+    const AppId = req.headers.authorization.split(" ")[1];
+
+    if (!AppId) {
+      return res
+        .status(404)
+        .json({ success: false, message: "AppId not found in session" });
+    }
+
+    const query = `
+            SELECT *
+            FROM ApplicationForm
+            WHERE AppId = @AppId
+          `;
+
+    const request = pool.request();
+    request.input("AppId", AppId);
+
+    const result = await request.query(query);
+
+    if (result.recordset.length > 0) {
+      console.log("AppQualifications retrieved successfully");
+      res.status(200).json({ success: true, data: result.recordset });
+    } else {
+      console.error("No AppQualifications found for the given AppId");
+      res
+        .status(404)
+        .json({ success: false, message: "No AppQualifications found" });
+    }
+  } catch (error) {
+    console.error("Error fetching AppQualifications:", error.message);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

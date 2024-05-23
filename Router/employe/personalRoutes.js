@@ -12,7 +12,7 @@ import {
   getPresentStatesByCountryId,
   getPersonalDetails,
 } from "../../Controller/PersonalController.js";
-import { UpdateDeclaration } from "../../Controller/Declaration.js";
+import { UpdateDeclaration, getDeclarationDetails } from "../../Controller/Declaration.js";
 
 
 const router = express.Router();
@@ -26,9 +26,12 @@ router.get("/districts/:stateId", getDistrictsByStateId);
 router.get('/taluk/:districtId', getTaluksByDistrictId);
 router.get('/city/:talukId', getCitiesByTalukId);
 router.post('/updatePersonalDetails', personlController);
-router.post("/declaration", UpdateDeclaration);
 router.get("/presentCountries",getPresentAllCountries)
 router.get("/PresentState/:countryId",getPresentStatesByCountryId)
 router.get("/getPrsl",getPersonalDetails)
+
+///this two is decalration controller .....
+router.post("/declaration", UpdateDeclaration);
+router.get("/getDeclaration",getDeclarationDetails)
 
 export default router;
