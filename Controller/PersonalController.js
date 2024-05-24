@@ -4,6 +4,7 @@ import pool from "../config/db.js";
 import { config } from "../config/db.js";
 import jwt from "jsonwebtoken";
 import { getType } from "./../helper/PersonalHelper.js";
+import { Query } from "mongoose";
 const JWT_KEY = "your_secret_key_here";
 
 export const getReligionController = async (req, res) => {
@@ -124,7 +125,7 @@ export const getCitiesByTalukId = (req, res) => {
     });
 };
 
-export const  personlController = async (req, res) => {
+export const personlController = async (req, res) => {
   try {
     const {
       AppName,
@@ -240,12 +241,10 @@ export const  personlController = async (req, res) => {
     // Check if any rows were affected
     if (result.rowsAffected[0] > 0) {
       console.log("Personal Details updated successfully");
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: "Personal Details updated successfully",
-        });
+      res.status(200).json({
+        success: true,
+        message: "Personal Details updated successfully",
+      });
     } else {
       console.error("Failed to update work experience");
       res
@@ -257,8 +256,6 @@ export const  personlController = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
-
 
 export const getPresentAllCountries = (req, res) => {
   // Logic to fetch all countries from the database
@@ -300,8 +297,9 @@ export const getPresentStatesByCountryId = (req, res) => {
 //     throw new Error('Token verification failed'); // Throw an error if token verification fails
 //   }
 // };
+
 export const  getPersonalDetails = async (req, res) => {
-  console.log(req.headers.authorization.split(' ')[1],"hiiiiiii")
+ console.log(req.headers.authorization.split(' ')[1],"lalalalala")
   try {
     const AppId = req.headers.authorization.split(' ')[1];
     
@@ -310,30 +308,41 @@ export const  getPersonalDetails = async (req, res) => {
     }
 
     const query = `
-      SELECT *
-      FROM ApplicationForm
-      WHERE AppId = @AppId
+      SELECT APP.*, 
+             CON.country_name, 
+             STT.state_name, 
+             DIS.Districtname, 
+             TAL.TalukName, 
+             CIY.city_name 
+      FROM ApplicationForm APP
+      INNER JOIN Countries_master CON ON CON.country_gid = APP.ResCountryId
+      INNER JOIN States_master STT ON STT.state_gid = APP.ResStateId
+      INNER JOIN District DIS ON DIS.DistrictId = APP.ResDistrictId
+      INNER JOIN Taluk TAL ON TAL.TalukId = APP.ResTalukId
+      INNER JOIN Cities_master CIY ON CIY.city_gid = APP.ResCityId
+      WHERE APP.AppId = @AppId
     `;
-
+   
+ 
     const request = pool.request();
     request.input("AppId", AppId);
 
     const result = await request.query(query);
-
+    console.log(result,"shahaha")
     if (result.recordset.length > 0) {
-      console.log("AppQualifications retrieved successfully");
+      console.log("Qualification retrieved successfully");
       res.status(200).json({ success: true, data: result.recordset });
     } else {
-      console.error("No AppQualifications found for the given AppId");
-      res.status(404).json({ success: false, message: "No AppQualifications found" });
+      console.error("No AppCourse found for the given AppId");
+      res.status(404).json({ success: false, message: "No Qualification  found" });
     }
   } catch (error) {
-    console.error("Error fetching AppQualifications:", error.message);
+    console.error("Error fetching AppCourse:", error.message);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
-    // Check if authorization header exists
+// Check if authorization header exists
 //     if (!req.headers.authorization) {
 //       return res.status(401).json({ success: false, message: "Unauthorized" });
 //     }

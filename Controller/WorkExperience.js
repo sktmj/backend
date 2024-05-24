@@ -246,8 +246,9 @@ export const getExperience = async (req, res) => {
     }
 
     const query = `
-        SELECT *
-        FROM AppWorkExp
+        SELECT APP.*, DEI.DesignationName
+        FROM AppWorkExp APP
+        INNER JOIN DesignationMaster DEI ON DEI.DesignationId = APP.Designation
         WHERE AppId = @AppId
       `;
 

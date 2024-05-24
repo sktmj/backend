@@ -17,6 +17,7 @@ export const getCourses = async (req, res) => {
 
 
 export const insertAppQualification = async (req, res) => {
+  console.log(req.body,"sssss")
   try {
     const { QualId, ColName, YearPass, Percentage, Degree, LastDegree, Location } = req.body;
 
@@ -251,10 +252,13 @@ export const  getQulificationDetails = async (req, res) => {
     }
 
     const query = `
-      SELECT *
-      FROM AppQualification
-      WHERE AppId = @AppId
-    `;
+    SELECT APP.*, QL.QualificationName
+    FROM AppQualification APP
+    INNER JOIN QualificationMaster QL ON QL.QualificationId = APP.QualId
+    WHERE APP.AppId = @AppId
+  `;
+
+   console.log(query,"jjjajajajajajaj")
 
     const request = pool.request();
     request.input("AppId", AppId);
