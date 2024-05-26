@@ -43,6 +43,7 @@ export const getCastesByReligion = async (req, res) => {
   }
 };
 
+
 export const getAllCountries = (req, res) => {
   // Logic to fetch all countries from the database
   pool
@@ -56,6 +57,8 @@ export const getAllCountries = (req, res) => {
       res.status(500).json({ error: "Error fetching countries" });
     });
 };
+
+
 
 // controllers/stateController.js
 export const getStatesByCountryId = (req, res) => {
@@ -74,6 +77,8 @@ export const getStatesByCountryId = (req, res) => {
     });
 };
 
+
+
 // controllers/districtController.js
 export const getDistrictsByStateId = (req, res) => {
   // Logic to fetch districts by state ID from the database
@@ -90,6 +95,8 @@ export const getDistrictsByStateId = (req, res) => {
       res.status(500).json({ error: "Error fetching districts" });
     });
 };
+
+
 
 // controllers/talukController.js
 export const getTaluksByDistrictId = (req, res) => {
@@ -108,6 +115,8 @@ export const getTaluksByDistrictId = (req, res) => {
     });
 };
 
+
+
 // controllers/cityController.js
 export const getCitiesByTalukId = (req, res) => {
   // Logic to fetch cities by taluk ID from the database
@@ -125,7 +134,10 @@ export const getCitiesByTalukId = (req, res) => {
     });
 };
 
+
+
 export const personlController = async (req, res) => {
+  console.log(req.body,"saaaa")
   try {
     const {
       AppName,
@@ -257,6 +269,7 @@ export const personlController = async (req, res) => {
   }
 };
 
+
 export const getPresentAllCountries = (req, res) => {
   // Logic to fetch all countries from the database
   pool
@@ -297,6 +310,7 @@ export const getPresentStatesByCountryId = (req, res) => {
 //     throw new Error('Token verification failed'); // Throw an error if token verification fails
 //   }
 // };
+
 
 export const  getPersonalDetails = async (req, res) => {
  console.log(req.headers.authorization.split(' ')[1],"lalalalala")
