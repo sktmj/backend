@@ -16,7 +16,7 @@ export const getDesignation = async (req, res) => {
 };
 
 export const InsertExperience = async (req, res) => {
-  console.log(req.headers.authorization.split(" ")[1]);
+  console.log(req.body,"ajayyy");
 
   try {
     const {
@@ -42,7 +42,7 @@ export const InsertExperience = async (req, res) => {
         .json({ success: false, message: "AppId not found in session" });
     }
 
-    const query = `INSERT INTO AppWorkExp (CompName, Designation, Duration, LastSalary, RelieveReason, RefPerson, PhoneNo, FrmMnth, FrmYr, ToMnth, ToYr, InitSalary, LastCompany, AppId)
+    const query = `INSERT INTO AppWorkExp (CompName, Designation, Duration, LastSalary,RelieveReason, RefPerson, PhoneNo, FrmMnth, FrmYr, ToMnth, ToYr, InitSalary, LastCompany, AppId)
         OUTPUT INSERTED.ExpId
         VALUES (@CompName, @Designation, @Duration, @LastSalary, @RelieveReason, @RefPerson, @PhoneNo, @FrmMnth, @FrmYr, @ToMnth, @ToYr, @InitSalary, @LastCompany, @AppId)`;
 
