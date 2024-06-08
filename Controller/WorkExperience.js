@@ -87,6 +87,39 @@ export const InsertExperience = async (req, res) => {
   }
 };
 
+
+export const deleteExperience = async (req, res) => {
+  try {
+    const { ExpId } = req.params; // Get AppQualId from URL parameters
+
+    if (!ExpId) {
+      return res.status(400).json({ success: false, message: "ExpId is required" });
+    }
+
+    const query = `
+      DELETE FROM  AppWorkExp
+      WHERE ExpId = @ExpId
+    `;
+
+    const request = pool.request();
+    request.input("ExpId", ExpId);
+
+    const result = await request.query(query);
+
+    if (result.rowsAffected[0] > 0) {
+      console.log("Experience deleted successfully");
+      res.status(200).json({ success: true, message: "Experience deleted successfully" });
+    } else {
+      console.error("Failed to delete Experience");
+      res.status(404).json({ success: false, message: "Failed to delete Experience" });
+    }
+  } catch (error) {
+    console.error("Error deleting Experience:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
 export const UpdateWorkExperience = async (req, res) => {
   console.log(req.body, "jsssss");
 

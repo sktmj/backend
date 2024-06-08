@@ -7,6 +7,7 @@ import {
   getExperience,
   updateAppExperience,
   getExperienceDetails,
+  deleteExperience,
 } from "../../Controller/WorkExperience.js";
 import multipleUpload from "./../../Middleware/Multer.js";
 
@@ -23,5 +24,6 @@ router.post(
 router.get("/getExpc", getExperience);
 router.put("/updateExpc", updateAppExperience);
 router.get("/getExperience",getExperienceDetails)
+router.delete("/deleteExperience",deleteExperience)
 
 export default router;
