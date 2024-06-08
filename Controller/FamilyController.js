@@ -51,12 +51,12 @@ export const FamilyDetails = async (req, res) => {
         .status(200)
         .json({
           success: true,
-          message: "FamilyDetails   inserted successfully",
+          message: "FamilyDetails   inserted successfully", 
           FamilyId,
         });
     } else {
       console.error("Failed to insert FamilyDetails  ");
-      res
+      res 
         .status(404)
         .json({ success: false, message: "Failed to insert FamilyDetails  " });
     }
@@ -225,6 +225,39 @@ export const LanguaguesController = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
+export const deleteLanguages = async (req, res) => {
+  try {
+    const { AppLanId } = req.params; // Get AppQualId from URL parameters
+
+    if (!AppLanId) {
+      return res.status(400).json({ success: false, message: "FamilyId is required" });
+    }
+
+    const query = `
+      DELETE FROM  AppLanguage
+      WHERE AppLanId = @AppLanId
+    `;
+
+    const request = pool.request();
+    request.input("AppLanId", AppLanId);
+
+    const result = await request.query(query);
+
+    if (result.rowsAffected[0] > 0) {
+      console.log("Languages deleted successfully");
+      res.status(200).json({ success: true, message: "Languages deleted successfully" });
+    } else {
+      console.error("Failed to delete Languages");
+      res.status(404).json({ success: false, message: "Failed to delete Languages" });
+    }
+  } catch (error) {
+    console.error("Error deleting Languages:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
 
 export const UpdateFamilyDetails = async (req, res) => {
   console.log(req.body, "jsssss");

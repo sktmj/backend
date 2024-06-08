@@ -1,6 +1,7 @@
 import express from "express";
 import {
   deleteFamily,
+  deleteLanguages,
   FamilyDetails,
   getFamilyDetails,
   getLanguageDetails,
@@ -20,5 +21,6 @@ router.put("/updatefam", UpdateFamilyDetails);
 router.get("/getLan", getLanguageDetails);
 router.put("/updateLan", UpdateLanguagesDetails);
 router.delete("/deletefamily/:FamilyId",deleteFamily)
+router.delete("/deleteLan/:AppLanId",deleteLanguages)
 
 export default router;
