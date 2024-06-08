@@ -190,6 +190,37 @@ export const insertAppCourse = async (req, res) => {
   }
 };
 
+export const deleteCourse = async (req, res) => {
+  try {
+    const { CourseId } = req.params; // Get AppQualId from URL parameters
+
+    if (!CourseId) {
+      return res.status(400).json({ success: false, message: "CourseId is required" });
+    }
+
+    const query = `
+      DELETE FROM  AppCourse
+      WHERE CourseId = @CourseId
+    `;
+
+    const request = pool.request();
+    request.input("CourseId", CourseId);
+
+    const result = await request.query(query);
+
+    if (result.rowsAffected[0] > 0) {
+      console.log("Course deleted successfully");
+      res.status(200).json({ success: true, message: "Course deleted successfully" });
+    } else {
+      console.error("Failed to delete Course");
+      res.status(404).json({ success: false, message: "Failed to delete Course" });
+    }
+  } catch (error) {
+    console.error("Error deleting Course:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 export const updateAppCourse = async (req, res) => {
   console.log(req.body,"jsssss")
   try {
