@@ -67,6 +67,39 @@ export const FamilyDetails = async (req, res) => {
 };
 
 
+export const deleteFamily = async (req, res) => {
+  try {
+    const { FamilyId } = req.params; // Get AppQualId from URL parameters
+
+    if (!FamilyId) {
+      return res.status(400).json({ success: false, message: "FamilyId is required" });
+    }
+
+    const query = `
+      DELETE FROM  AppFamilyDtl
+      WHERE FamilyId = @FamilyId
+    `;
+
+    const request = pool.request();
+    request.input("FamilyId", FamilyId);
+
+    const result = await request.query(query);
+
+    if (result.rowsAffected[0] > 0) {
+      console.log("Family deleted successfully");
+      res.status(200).json({ success: true, message: "Family deleted successfully" });
+    } else {
+      console.error("Failed to delete Family");
+      res.status(404).json({ success: false, message: "Failed to delete Family" });
+    }
+  } catch (error) {
+    console.error("Error deleting Family:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+
 export const getLanguageDetails = async (req, res) => {
   try {
     const AppId = req.headers.authorization.split(" ")[1]; // Extract AppId from the header
