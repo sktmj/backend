@@ -19,6 +19,6 @@ router.get("/getFam", getFamilyDetails);
 router.put("/updatefam", UpdateFamilyDetails);
 router.get("/getLan", getLanguageDetails);
 router.put("/updateLan", UpdateLanguagesDetails);
-router.delete("/deleteFamily/:FamilyId", deleteFamily);
+router.delete("/deletefamily/:FamilyId",deleteFamily)
 
 export default router;
