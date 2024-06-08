@@ -20,5 +20,5 @@ router.get("/getQlf", getQulificationDetails);
 router.get("/getCourse", getCourseDetails)
 router.put("/updateAppQualification", updateAppQualification);
 router.put("/updateAppCourse",updateAppCourse)
-router.delete("/deleteQual",deleteAppQualification)
+router.delete("/deleteQual/:AppQualId", deleteAppQualification);
 export default router;

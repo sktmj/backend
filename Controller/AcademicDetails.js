@@ -64,7 +64,7 @@ export const insertAppQualification = async (req, res) => {
 
 export const deleteAppQualification = async (req, res) => {
   try {
-    const { AppQualId } = req.body;
+    const { AppQualId } = req.params; // Get AppQualId from URL parameters
 
     if (!AppQualId) {
       return res.status(400).json({ success: false, message: "AppQualId is required" });
@@ -92,7 +92,6 @@ export const deleteAppQualification = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
 
 
 export const updateAppQualification = async (req, res) => {
