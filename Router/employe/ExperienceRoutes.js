@@ -24,6 +24,6 @@ router.post(
 router.get("/getExpc", getExperience);
 router.put("/updateExpc", updateAppExperience);
 router.get("/getExperience",getExperienceDetails)
-router.delete("/deleteExperience",deleteExperience)
+router.delete("/deleteExperience/:ExpId",deleteExperience)
 
 export default router;
