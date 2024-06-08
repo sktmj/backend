@@ -62,6 +62,37 @@ export const insertAppQualification = async (req, res) => {
   }
 };
 
+export const deleteAppQualification = async (req, res) => {
+  try {
+    const { AppQualId } = req.body;
+
+    if (!AppQualId) {
+      return res.status(400).json({ success: false, message: "AppQualId is required" });
+    }
+
+    const query = `
+      DELETE FROM AppQualification
+      WHERE AppQualId = @AppQualId
+    `;
+
+    const request = pool.request();
+    request.input("AppQualId", AppQualId);
+
+    const result = await request.query(query);
+
+    if (result.rowsAffected[0] > 0) {
+      console.log("AppQualification deleted successfully");
+      res.status(200).json({ success: true, message: "AppQualification deleted successfully" });
+    } else {
+      console.error("Failed to delete AppQualification");
+      res.status(404).json({ success: false, message: "Failed to delete AppQualification" });
+    }
+  } catch (error) {
+    console.error("Error deleting AppQualification:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 
 
 export const updateAppQualification = async (req, res) => {

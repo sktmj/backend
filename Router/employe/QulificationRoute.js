@@ -8,6 +8,7 @@ import {
   getCourseDetails,
   updateAppQualification,
   updateAppCourse,
+  deleteAppQualification,
 } from "../../Controller/AcademicDetails.js";
 
 const router = express.Router();
@@ -19,4 +20,5 @@ router.get("/getQlf", getQulificationDetails);
 router.get("/getCourse", getCourseDetails)
 router.put("/updateAppQualification", updateAppQualification);
 router.put("/updateAppCourse",updateAppCourse)
+router.delete("/deleteQual",deleteAppQualification)
 export default router;
