@@ -1,14 +1,12 @@
 
 import express from "express"
-import multipleUpload from './../../Middleware/Multer.js';
-import { uploadMobilePic, uploadProfilePic, uploadResume } from "../../Controller/Uploads.js";
+
+import { uploadProfilePic } from "../../Controller/Uploads.js";
+import multipleUpload from "../../Middleware/Multer.js";
 
 
 const router = express.Router();
 
 
-router.post("/profilepic",multipleUpload.single('Pic'),uploadProfilePic)
-router.post("/mobilepic",multipleUpload.single('MobilePic'),uploadMobilePic)
-router.post("/resume",multipleUpload.single('ResumeFileName'),uploadResume)
-
+router.post("/profilepic", multipleUpload.single('Pic'), uploadProfilePic);
 export default router;
