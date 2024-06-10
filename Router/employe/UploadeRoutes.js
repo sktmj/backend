@@ -9,5 +9,5 @@ const router = express.Router();
 
 
 router.post("/profilepic", multipleUpload.single('Pic'), uploadProfilePic);
-router.post("/mobilepic", multipleUpload.single('Pic'), uploadMobilePic);
+router.post("/mobilepic", multipleUpload.single('MobilePic'), uploadMobilePic);
 export default router;
