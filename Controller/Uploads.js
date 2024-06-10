@@ -1,7 +1,9 @@
 import pool from "../config/db.js";
-import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-const __dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export const uploadProfilePic = async (req, res) => {
   try {
@@ -9,6 +11,11 @@ export const uploadProfilePic = async (req, res) => {
 
     if (!AppId) {
       return res.status(404).json({ success: false, message: "AppId not found in session" });
+    }
+
+    // Validate if AppId is a number
+    if (isNaN(AppId)) {
+      return res.status(400).json({ success: false, message: "Invalid AppId" });
     }
 
     // Check if file is uploaded
