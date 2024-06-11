@@ -5,6 +5,50 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+
+export const getUserUploads = async (req, res) => {
+  try {
+    const AppId = req.headers.authorization ? req.headers.authorization.split(" ")[1] : null;
+
+    if (!AppId) {
+      return res.status(404).json({ success: false, message: "AppId not found in session" });
+    }
+
+    // Validate if AppId is a number
+    if (isNaN(AppId)) {
+      return res.status(400).json({ success: false, message: "Invalid AppId" });
+    }
+
+    const query = `SELECT Pic, MobilePic, ResumeFileName FROM ApplicationForm WHERE AppId = @AppId`;
+    const request = pool.request();
+    request.input("AppId", AppId);
+    
+    const result = await request.query(query);
+
+    // Check if any rows were retrieved
+    if (result.recordset && result.recordset.length > 0) {
+      const { Pic, MobilePic, ResumeFileName } = result.recordset[0];
+      console.log("User uploads retrieved successfully");
+      res.status(200).json({
+        success: true,
+        data: {
+          profilePicture: Pic,
+          mobilePicture: MobilePic,
+          resume: ResumeFileName
+        }
+      });
+    } else {
+      console.error("User uploads not found");
+      res.status(404).json({ success: false, message: "User uploads not found" });
+    }
+  } catch (error) {
+    console.error("Error retrieving user uploads:", error.message);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+
 export const uploadProfilePic = async (req, res) => {
   try {
     const AppId = req.headers.authorization ? req.headers.authorization.split(" ")[1] : null;
