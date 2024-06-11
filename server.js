@@ -28,8 +28,6 @@ app.use(
   })
 );
 
-
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
