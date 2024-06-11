@@ -1,36 +1,53 @@
 import multer from 'multer';
-import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import fs from 'fs';
 
-// Set storage engine
+// Determine __dirname for ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Ensure the directories exist
+const profilePicDir = join(__dirname, '../public/uploads');
+const mobilePicDir = join(__dirname, '../public/mobilepics');
+const resumeDir = join(__dirname, '../public/resumes');
+
+const ensureDirExists = (dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+    console.log(`Directory ${dir} created`);
+  } else {
+    console.log(`Directory ${dir} already exists`);
+  }
+};
+
+ensureDirExists(profilePicDir);
+ensureDirExists(mobilePicDir);
+ensureDirExists(resumeDir);
+
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, 'public/uploads'));
+  destination: (req, file, cb) => {
+    let uploadDir = profilePicDir; // Default directory
+    if (req.originalUrl.includes('mobilepic')) {
+      uploadDir = mobilePicDir;
+    } else if (req.originalUrl.includes('resume')) {
+      uploadDir = resumeDir;
+    }
+    console.log("Saving file to:", uploadDir);
+    cb(null, uploadDir);
   },
-  filename: function (req, file, cb) {
-    cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+  filename: (req, file, cb) => {
+    console.log("Saving file as:", file.originalname);
+    cb(null, file.originalname);
   }
 });
 
-// Initialize upload
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 1000000 }, // Limit file size to 1MB
-  fileFilter: function (req, file, cb) {
-    checkFileType(file, cb);
+const multipleUpload = multer({ 
+  storage,
+  fileFilter: (req, file, cb) => {
+    console.log("Received file with fieldname:", file.fieldname);
+    cb(null, true);
   }
-}).single('file');
+});
 
-// Check file type
-function checkFileType(file, cb) {
-  const filetypes = /jpeg|jpg|png|gif/;
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = filetypes.test(file.mimetype);
-
-  if (mimetype && extname) {
-    return cb(null, true);
-  } else {
-    cb('Error: Images Only!');
-  }
-}
-
-export default upload;
+export default multipleUpload;
