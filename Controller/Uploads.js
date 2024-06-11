@@ -1,10 +1,10 @@
 import pool from "../config/db.js";
+import upload from "../Middleware/Multer.js"
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
 
 export const getUserUploads = async (req, res) => {
   try {
@@ -14,7 +14,6 @@ export const getUserUploads = async (req, res) => {
       return res.status(404).json({ success: false, message: "AppId not found in session" });
     }
 
-    // Validate if AppId is a number
     if (isNaN(AppId)) {
       return res.status(400).json({ success: false, message: "Invalid AppId" });
     }
@@ -25,16 +24,15 @@ export const getUserUploads = async (req, res) => {
     
     const result = await request.query(query);
 
-    // Check if any rows were retrieved
     if (result.recordset && result.recordset.length > 0) {
       const { Pic, MobilePic, ResumeFileName } = result.recordset[0];
       console.log("User uploads retrieved successfully");
       res.status(200).json({
         success: true,
         data: {
-          profilePicture: Pic,
-          mobilePicture: MobilePic,
-          resume: ResumeFileName
+          profilePicture: Pic ? `/uploads/${Pic}` : null,
+          mobilePicture: MobilePic ? `/uploads/${MobilePic}` : null,
+          resume: ResumeFileName ? `/uploads/${ResumeFileName}` : null
         }
       });
     } else {
