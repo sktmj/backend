@@ -10,6 +10,7 @@ const __dirname = dirname(__filename);
 // Ensure the directories exist
 const profilePicDir = join(__dirname, '../public/uploads');
 const mobilePicDir = join(__dirname, '../public/mobilepics');
+const resumeDir = join(__dirname, '../public/resumes');
 
 const ensureDirExists = (dir) => {
   if (!fs.existsSync(dir)) {
@@ -22,12 +23,15 @@ const ensureDirExists = (dir) => {
 
 ensureDirExists(profilePicDir);
 ensureDirExists(mobilePicDir);
+ensureDirExists(resumeDir);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     let uploadDir = profilePicDir; // Default directory
     if (req.originalUrl.includes('mobilepic')) {
       uploadDir = mobilePicDir;
+    } else if (req.originalUrl.includes('resume')) {
+      uploadDir = resumeDir;
     }
     console.log("Saving file to:", uploadDir);
     cb(null, uploadDir);
