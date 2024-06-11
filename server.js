@@ -11,7 +11,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import session from "express-session";
 import cookieParser from "cookie-parser";
-import path from "path";
+
 const app = express();
 
 app.use(
@@ -28,8 +28,7 @@ app.use(
   })
 );
 
-// Middleware to serve static files from the "uploads" directory
-app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
