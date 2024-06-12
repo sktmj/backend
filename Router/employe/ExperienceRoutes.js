@@ -3,24 +3,20 @@ import {
   InsertExperience,
   getDesignation,
   UpdateWorkExperience,
-  uploadCarLicenseDoc,
   getExperience,
   updateAppExperience,
   getExperienceDetails,
   deleteExperience,
+  uploadDrivingLic
 } from "../../Controller/WorkExperience.js";
-import multipleUpload from "./../../Middleware/Multer.js";
+import multipleUpload from "../../Middleware/Multer.js";
 
 const router = express.Router();
 
 router.get("/designation", getDesignation);
 router.post("/experience", InsertExperience);
 router.post("/TotalExperience", UpdateWorkExperience);
-router.post(
-  "/upload",
-  multipleUpload.single("CarLicenseDoc"),
-  uploadCarLicenseDoc
-);
+router.post("/licdoc", multipleUpload.single('CarLicenseDoc'), uploadDrivingLic);
 router.get("/getExpc", getExperience);
 router.put("/updateExpc", updateAppExperience);
 router.get("/getExperience",getExperienceDetails)

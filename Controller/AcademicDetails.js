@@ -302,8 +302,7 @@ export const  getCourseDetails = async (req, res) => {
   }
 };
 
-
-export const  getQulificationDetails = async (req, res) => {
+export const   getQulificationDetails = async (req, res) => {
   console.log(req.headers.authorization.split(' ')[1],"hiiiiiii")
   try {
     const AppId = req.headers.authorization.split(' ')[1];
@@ -318,8 +317,6 @@ export const  getQulificationDetails = async (req, res) => {
     INNER JOIN QualificationMaster QL ON QL.QualificationId = APP.QualId
     WHERE APP.AppId = @AppId
   `;
-
-   console.log(query,"jjjajajajajajaj")
 
     const request = pool.request();
     request.input("AppId", AppId);
@@ -338,3 +335,4 @@ export const  getQulificationDetails = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+

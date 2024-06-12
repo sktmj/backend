@@ -14,7 +14,7 @@ import {
 
 const router = express.Router();
 
-
+router.get("/qualification", getCourses);
 router.post("/InsertQlCT", insertAppQualification);
 router.post("/courses", insertAppCourse);
 router.get("/getQlf", getQulificationDetails);
