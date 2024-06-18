@@ -3,10 +3,10 @@ import sql  from 'mssql';
 
 
  export const config = {
-  server: "192.168.50.38\\DAIVELHO",
-  database: "DAIVELP2P",
+  server: "192.168.50.30",
+  database: "SKTPayroll",
   user: "sa",
-  password: "Admin@1234",
+  password: "ktm@werty123",
   options: {
     encrypt: false,
   },
