@@ -11,7 +11,7 @@ const __dirname = dirname(__filename);
 const profilePicDir = join(__dirname, '../public/uploads');
 const mobilePicDir = join(__dirname, '../public/mobilepics');
 const resumeDir = join(__dirname, '../public/resumes');
-const CarLicenseDocDir = join(__dirname, '../public/license')
+const CarLicenseDocDir = join(__dirname, '../public/license');
 
 const ensureDirExists = (dir) => {
   if (!fs.existsSync(dir)) {
@@ -25,7 +25,7 @@ const ensureDirExists = (dir) => {
 ensureDirExists(profilePicDir);
 ensureDirExists(mobilePicDir);
 ensureDirExists(resumeDir);
-ensureDirExists(CarLicenseDocDir)
+ensureDirExists(CarLicenseDocDir);
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -34,7 +34,7 @@ const storage = multer.diskStorage({
       uploadDir = mobilePicDir;
     } else if (req.originalUrl.includes('resume')) {
       uploadDir = resumeDir;
-    } else if (req.originalUrl.includes('CarLicenseDoc')){
+    } else if (req.originalUrl.includes('CarLicenseDoc')) {
       uploadDir = CarLicenseDocDir;
     }
     console.log("Saving file to:", uploadDir);
@@ -55,3 +55,4 @@ const multipleUpload = multer({
 });
 
 export default multipleUpload;
+ 
