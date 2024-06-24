@@ -170,6 +170,7 @@ export const personlController = async (req, res) => {
       EmailId,
       PANNO,
       AadharNo,
+      PassportNo,
     } = req.body;
     const AppId = req.headers.authorization.split(" ")[1];
 
@@ -210,7 +211,8 @@ export const personlController = async (req, res) => {
     EmailId = @EmailId,
     PANNO = @PANNO,
     LandMark = @LandMark,
-    AadharNo = @AadharNo
+    AadharNo = @AadharNo,
+    PassportNo=@PassportNo,
     WHERE AppId = @AppId;
     `;
 
@@ -246,6 +248,7 @@ export const personlController = async (req, res) => {
     request.input("PANNO", PANNO);
     request.input("LandMark", LandMark);
     request.input("AadharNo", AadharNo);
+    request.input("PassportNo",PassportNo)
     request.input("AppId", AppId);
 
     const result = await request.query(query);
