@@ -168,7 +168,7 @@ export const personlController = async (req, res) => {
       PerPhoneNo,
       LandMark,
       EmailId,
-      PANNO,
+      PANNo,
       AadharNo,
       PassportNo,
     } = req.body;
@@ -209,7 +209,7 @@ export const personlController = async (req, res) => {
     PerPincode = @PerPincode,
     PerPhoneNo = @PerPhoneNo,
     EmailId = @EmailId,
-    PANNO = @PANNO,
+    PANNo = @PANNo,
     LandMark = @LandMark,
     AadharNo = @AadharNo,
     PassportNo=@PassportNo
@@ -245,7 +245,7 @@ export const personlController = async (req, res) => {
     request.input("PerPincode", PerPincode);
     request.input("PerPhoneNo", PerPhoneNo);
     request.input("EmailId", EmailId);
-    request.input("PANNO", PANNO);
+    request.input("PANNo", PANNo);
     request.input("LandMark", LandMark);
     request.input("AadharNo", AadharNo);
     request.input("PassportNo",PassportNo)
