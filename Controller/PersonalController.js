@@ -212,7 +212,7 @@ export const personlController = async (req, res) => {
     PANNO = @PANNO,
     LandMark = @LandMark,
     AadharNo = @AadharNo,
-    PassportNo=@PassportNo,
+    PassportNo=@PassportNo
     WHERE AppId = @AppId;
     `;
 
