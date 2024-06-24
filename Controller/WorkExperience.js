@@ -79,6 +79,8 @@ export const InsertExperience = async (req, res) => {
       InitSalary,
       LastCompany,
     } = req.body;
+
+    console.log(req.body,"helloooooo")
     const AppId = req.headers.authorization.split(" ")[1];
 
     if (!AppId) {

@@ -14,7 +14,7 @@ import multipleUpload from "../../Middleware/Multer.js";
 const router = express.Router();
 
 router.get("/designation", getDesignation);
-router.post("/experience", InsertExperience);
+router.post("/experienceee", InsertExperience);
 router.post("/TotalExperience", UpdateWorkExperience);
 router.post("/licdoc", multipleUpload.single('CarLicenseDoc'), uploadDrivingLic);
 router.get("/getExpc", getExperience);
