@@ -18,11 +18,11 @@ const router = express.Router();
 
 router.get("/designation", getDesignation);
 router.post('/experienceee', addExperience);
-router.put("/TotalExperience", UpdateWorkExperience);
+router.put("/total", UpdateWorkExperience);
 router.post("/licdoc", multipleUpload.single('CarLicenseDoc'), uploadDrivingLic);
 router.get("/getExperience", getExperience);
 router.put("/updateExpc", updateAppExperience);
-router.get("/getExperienceDetails",getExperienceDetails)
+router.get("/getExceDetails",getExperienceDetails)
 router.delete("/deleteExperience/:ExpId",deleteExperience)
 
 export default router;
