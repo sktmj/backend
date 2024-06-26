@@ -60,81 +60,59 @@ export const getDesignation = async (req, res) => {
   }
 };
 
-export const InsertExperience = async (req, res) => {
-  console.log(req.body,"ajayyy");
-
+export const addExperience = async (req, res) => {
+  console.log(req.body,"jsjsj")
+  console.log(req.headers.authorization.split(" ")[1],"dkdkdkdkdkd")
   try {
-    const {
-      CompName,
-      Designation,
-      Duration,
-      LastSalary,
-      RelieveReason,
-      RefPerson,
-      PhoneNo,
-      FrmMnth,
-      FrmYr,
-      ToMnth,
-      ToYr,
-      InitSalary,
-      LastCompany,
-    } = req.body;
-
-    console.log(req.body,"helloooooo")
+    const { CompName, Designation, LastSalary, RelieveReason, RefPerson, PhoneNo, FrmMnth, FrmYr, ToMnth, ToYr, InitSalary, LastCompany } = req.body;
     const AppId = req.headers.authorization.split(" ")[1];
 
     if (!AppId) {
-      return res
-        .status(404)
-        .json({ success: false, message: "AppId not found in session" });
+      return res.status(404).json({ success: false, message: "AppId not found in session" });
     }
 
-    const query = `INSERT INTO AppWorkExp (CompName, Designation, Duration, LastSalary,RelieveReason, RefPerson, PhoneNo, FrmMnth, FrmYr, ToMnth, ToYr, InitSalary, LastCompany, AppId)
-        OUTPUT INSERTED.ExpId
-        VALUES (@CompName, @Designation, @Duration, @LastSalary, @RelieveReason, @RefPerson, @PhoneNo, @FrmMnth, @FrmYr, @ToMnth, @ToYr, @InitSalary, @LastCompany, @AppId)`;
+    const query = `
+      INSERT INTO AppWorkExp (AppId, CompName, Designation, LastSalary, RelieveReason, RefPerson, PhoneNo, FrmMnth, FrmYr, ToMnth, ToYr, InitSalary, LastCompany)
+      OUTPUT INSERTED.ExpId
+      VALUES (@AppId, @CompName, @Designation, @LastSalary, @RelieveReason, @RefPerson, @PhoneNo, @FrmMnth, @FrmYr, @ToMnth, @ToYr, @InitSalary, @LastCompany)
+    `;
 
     const request = pool.request();
-
+    request.input("AppId", AppId);
     request.input("CompName", CompName);
     request.input("Designation", Designation);
-    request.input("Duration", Duration || 0); // Default to 0 if Duration is null
-    request.input("LastSalary", LastSalary || 0); // Default to 0 if LastSalary is null
+    request.input("LastSalary", LastSalary);
     request.input("RelieveReason", RelieveReason);
     request.input("RefPerson", RefPerson);
-    request.input("PhoneNo", PhoneNo || ""); // Default to empty string if PhoneNo is null
+    request.input("PhoneNo", PhoneNo);
     request.input("FrmMnth", FrmMnth);
     request.input("FrmYr", FrmYr);
     request.input("ToMnth", ToMnth);
     request.input("ToYr", ToYr);
-    request.input("InitSalary", InitSalary || 0); // Default to 0 if InitSalary is null
+    request.input("InitSalary", InitSalary);
     request.input("LastCompany", LastCompany);
-    request.input("AppId", AppId);
+
     const result = await request.query(query);
-    // Check if any rows were affected
+
     if (result.recordset.length > 0) {
       const ExpId = result.recordset[0].ExpId;
-      req.session.ExpId = ExpId;
+      req.session.ExpId = ExpId; // Store in session
+
       console.log("Experience inserted successfully with ExpId:", ExpId);
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: "Experience  inserted successfully",
-          ExpId,
-        });
+      res.status(200).json({
+        success: true,
+        message: "Experience inserted successfully",
+        ExpId,
+      });
     } else {
-      console.error("Failed to insert Experience ");
-      res
-        .status(404)
-        .json({ success: false, message: "Failed to insertExperience" });
+      console.error("Failed to insert Experience");
+      res.status(404).json({ success: false, message: "Failed to insert Experience" });
     }
   } catch (error) {
-    console.error("Error inserting Experience :", error.message);
+    console.error("Error inserting Experience:", error.message);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
-
 export const deleteExperience = async (req, res) => {
   try {
     const { ExpId } = req.params; // Get AppQualId from URL parameters
@@ -166,16 +144,16 @@ export const deleteExperience = async (req, res) => {
   }
 };
 
-
 export const UpdateWorkExperience = async (req, res) => {
-  console.log(req.body, "jsssss");
-
+  console.log(req.body,"aaaaaa")
   try {
     const {
       WorkCompany,
       RelieveReason,
       EPFNO,
       UANNO,
+      IsPF,
+      IsRegEmpEx,
       RegExpExNo,
       SalesExp,
       HealthIssue,
@@ -184,7 +162,7 @@ export const UpdateWorkExperience = async (req, res) => {
       IsCompWrkHere,
       CarLicense,
     } = req.body;
-
+    
     const AppId = req.headers.authorization.split(" ")[1];
 
     if (!AppId) {
@@ -194,20 +172,22 @@ export const UpdateWorkExperience = async (req, res) => {
     }
 
     const query = `
-    UPDATE ApplicationForm
-    SET WorkCompany = @WorkCompany,
-        RelieveReason = @RelieveReason,
-        EPFNO = @EPFNO,
-        UANNO = @UANNO,
-        RegExpExNo = @RegExpExNo,
-        SalesExp = @SalesExp,
-        HealthIssue = @HealthIssue,
-        IsDriving = @IsDriving,
-        LicenseNo = @LicenseNo,
-        IsCompWrkHere = @IsCompWrkHere,
-        CarLicense = @CarLicense
-    WHERE AppId = @AppId 
-`;
+      UPDATE ApplicationForm
+      SET WorkCompany = @WorkCompany,
+          RelieveReason = @RelieveReason,
+          EPFNO = @EPFNO,
+          UANNO = @UANNO,
+          RegExpExNo = @RegExpExNo,
+          SalesExp = @SalesExp,
+          HealthIssue = @HealthIssue,
+          IsDriving = @IsDriving,
+          LicenseNo = @LicenseNo,
+          IsCompWrkHere = @IsCompWrkHere,
+          CarLicense = @CarLicense,
+          IsPF = @IsPF,
+          IsRegEmpEx = @IsRegEmpEx
+      WHERE AppId = @AppId;
+    `;
 
     const request = pool.request();
     request.input("WorkCompany", WorkCompany);
@@ -221,6 +201,8 @@ export const UpdateWorkExperience = async (req, res) => {
     request.input("LicenseNo", LicenseNo);
     request.input("IsCompWrkHere", IsCompWrkHere);
     request.input("CarLicense", CarLicense);
+    request.input("IsPF", IsPF);
+    request.input("IsRegEmpEx", IsRegEmpEx);
     request.input("AppId", AppId);
 
     const result = await request.query(query);
@@ -228,23 +210,23 @@ export const UpdateWorkExperience = async (req, res) => {
     // Check if any rows were affected
     if (result.rowsAffected[0] > 0) {
       console.log("Work experience updated successfully");
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: "Work experience updated successfully",
-        });
+      res.status(200).json({
+        success: true,
+        message: "Work experience updated successfully",
+      });
     } else {
       console.error("Failed to update work experience");
-      res
-        .status(404)
-        .json({ success: false, message: "Failed to update work experience" });
+      res.status(404).json({
+        success: false,
+        message: "Failed to update work experience",
+      });
     }
   } catch (error) {
     console.error("Error updating work experience:", error.message);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
 const __dirname = path.resolve();
 
 export const uploadCarLicenseDoc = (req, res) => {
@@ -313,11 +295,9 @@ export const uploadCarLicenseDoc = (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
-export const getExperience = async (req, res) => {
-  console.log(req.headers.authorization.split(" ")[1], "hsssss");
+ export const getExperience = async (req, res) => {
   try {
-    const AppId = req.headers.authorization.split(" ")[1];
+    const AppId = req.headers.authorization.split(" ")[1]; // Extract AppId from the header
 
     if (!AppId) {
       return res
@@ -326,34 +306,27 @@ export const getExperience = async (req, res) => {
     }
 
     const query = `
-        SELECT APP.*, DEI.DesignationName
-        FROM AppWorkExp APP
-        INNER JOIN DesignationMaster DEI ON DEI.DesignationId = APP.Designation
-        WHERE AppId = @AppId
-      `;
-
+    SELECT *
+    FROM AppWorkExp
+    WHERE AppId = @AppId
+  `;
     const request = pool.request();
     request.input("AppId", AppId);
-
     const result = await request.query(query);
-
+    // Return appropriate response based on query result
     if (result.recordset.length > 0) {
-      console.log("Experience retrieved successfully");
       res.status(200).json({ success: true, data: result.recordset });
     } else {
-      console.error("No AppExperience found for the given AppId");
-      res
-        .status(404)
-        .json({ success: false, message: "No AppExperience found" });
+      res.status(404).json({ success: false, message: "No experience details found" });
     }
   } catch (error) {
-    console.error("Error fetching AppExperience:", error.message);
+    console.error("Error fetching experience details:", error.message);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
 export const updateAppExperience = async (req, res) => {
-  console.log(req.body, "jsssss");
+  console.log(req.body, "updateeeeeee");
   try {
     // Destructuring request body
     const {
