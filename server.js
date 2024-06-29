@@ -32,7 +32,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(cors({
-  origin: 'hrm.daivel.in', // Replace with your React Native app's domain or use '*' to allow all origins (not recommended for production)
+  origin: 'http://hrm.daivel.in', // Replace with your React Native app's domain or use '*' to allow all origins (not recommended for production)
   credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 }));
 app.use(cookieParser());
