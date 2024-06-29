@@ -47,6 +47,6 @@ app.use("/api/v1/other", OtherRoutes);
 app.use("/api/v1/uploads", uploadRoutes);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT,"103.99.149.67", () => {
+app.listen(PORT, () => {
   console.log(`Server running on Port ${PORT}`);
 });
