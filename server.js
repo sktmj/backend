@@ -31,7 +31,10 @@ app.use(
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
-app.use(cors());
+app.use(cors({
+  origin: 'hrm.daivel.in', // Replace with your React Native app's domain or use '*' to allow all origins (not recommended for production)
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+}));
 app.use(cookieParser());
 
 // Routes
@@ -44,6 +47,6 @@ app.use("/api/v1/other", OtherRoutes);
 app.use("/api/v1/uploads", uploadRoutes);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT,"103.99.149.67", () => {
   console.log(`Server running on Port ${PORT}`);
 });
