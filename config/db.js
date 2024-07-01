@@ -3,7 +3,7 @@ import sql  from 'mssql';
 
 
  export const config = {
-  server: "192.168.50.38\DAIVELHO",
+  server: "192.168.50.38\\DAIVELHO",
   database: "DAIVELP2P",
   user: "sa",
   password: "Admin@1234",
@@ -23,7 +23,7 @@ pool
   });
 export default pool;
 
-// server : 192.168.50.38\DAIVELHO
+// server : 192.168.50.38\\DAIVELHO
 // Database : DAIVELP2P
 
 // Username : sa
