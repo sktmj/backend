@@ -37,3 +37,21 @@ export const verifyToken = (req, res, next) => {
     res.status(401).json({ error: "Invalid token" });
   }
 };
+
+
+// server : 192.168.50.38\\DAIVELHO
+// Database : DAIVELP2P
+
+// Username : sa
+// Password : Admin@1234
+
+
+// export const config = {
+//   server: "192.168.50.30",
+//   database: "SKTPayroll",
+//   user: "sa",
+//   password: "ktm@werty123",
+//   options: {
+//     encrypt: false,
+//   },
+// };
