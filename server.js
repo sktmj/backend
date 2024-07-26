@@ -6,6 +6,9 @@ import ExperienceRoutes from "./Router/employe/ExperienceRoutes.js";
 import familyRoute from "./Router/employe/FamilyRoute.js"
 import OtherRoutes from "./Router/employe/OthersRoute.js";
 import uploadRoutes from "./Router/employe/UploadeRoutes.js";
+
+import adminAuth from "./Router/admin/authRoute.js"
+import adminHome from "./Router/admin/homeRoute.js"
 import morgan from "morgan";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -45,6 +48,10 @@ app.use("/api/v1/expc", ExperienceRoutes);
 app.use("/api/v1/fam",familyRoute);
 app.use("/api/v1/other", OtherRoutes);
 app.use("/api/v1/uploads", uploadRoutes);
+
+//admin routes
+app.use("/api/v2/auth",adminAuth);
+app.use("/api/v2/home",adminHome)
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
