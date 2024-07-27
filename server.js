@@ -8,7 +8,8 @@ import OtherRoutes from "./Router/employe/OthersRoute.js";
 import uploadRoutes from "./Router/employe/UploadeRoutes.js";
 
 import adminAuth from "./Router/admin/authRoute.js"
-import adminHome from "./Router/admin/homeRoute.js"
+import adminOutpass from "./Router/admin/OutpassRoute.js"
+import adminLeave from "./Router/admin/leaveRoute.js"
 import morgan from "morgan";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -51,7 +52,8 @@ app.use("/api/v1/uploads", uploadRoutes);
 
 //admin routes
 app.use("/api/v2/auth",adminAuth);
-app.use("/api/v2/home",adminHome)
+app.use("/api/v2/home",adminOutpass)
+app.use("/api/v2/lve",adminLeave)
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

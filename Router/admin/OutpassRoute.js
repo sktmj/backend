@@ -1,5 +1,5 @@
 import express from "express";
-import { employeIdcontroller, getCalander, insertOutpassController, OrganisationController } from "../../Controller/admin/HomeController.js";
+import { employeIdcontroller, getCalander, insertOutpassController, OrganisationController } from "../../Controller/admin/OutpassController.js";
 
 const router = express.Router();
 
