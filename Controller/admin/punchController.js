@@ -1,6 +1,5 @@
 import sql from 'mssql';
 import { daivelPool, pool } from '../../config/db.js';
-
 export const PunchController = async (req, res) => {
     const { UserId } = req.params;
     const { FromDate, ToDate } = req.query;
@@ -18,6 +17,9 @@ export const PunchController = async (req, res) => {
         const year = DtpFrmDate.getFullYear();
         const StrTableName = `DeviceLogs_${month}_${year}`;
 
+        console.log('Request Params:', { UserId, FromDate, ToDate });
+        console.log('Table Name:', StrTableName);
+
         // Check if the table exists
         const checkTableQuery = `
             SELECT *
@@ -29,9 +31,8 @@ export const PunchController = async (req, res) => {
             .input('TableName', sql.NVarChar, StrTableName)
             .query(checkTableQuery);
 
-        console.log('Table Name:', StrTableName);
-
         if (tableCheck.recordset.length === 0) {
+            console.log('Table does not exist:', StrTableName);
             return res.status(404).json({ error: `Table ${StrTableName} does not exist` });
         }
 
@@ -73,6 +74,8 @@ export const PunchController = async (req, res) => {
             .input('DtpToDate', sql.DateTime, DtpToDate)
             .input('UserId', sql.Int, UserId)
             .query(Sqlstr);
+
+        console.log('Query Result:', result.recordset);
 
         res.json(result.recordset);
     } catch (error) {
