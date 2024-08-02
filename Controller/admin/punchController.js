@@ -21,16 +21,21 @@ export const PunchController = async (req, res) => {
     const result = await pool
       .request()
       .input("EmployeeId", sql.Int, EmployeeId)
-      .input("FromDate", sql.Date, FromDate)
-      .input("ToDate", sql.Date, ToDate)
-      .query(`SELECT CONVERT(NVARCHAR,LogDate,105) As PunchDate,FORMAT(Dev.LogDate,'HH:mm tt') as PunchTime,D.DeviceFName 
-  FROM ${StrTableName} Dev
-  INNER JOIN Devices D ON D.DeviceId=Dev.DeviceId
-  INNER JOIN Employees E ON E.EmployeeCode=Dev.UserId
-  INNER JOIN SKTPayroll.dbo.EmployeeMaster EMP ON EMP.BiometricCode=E.EmployeeCode
-   WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
-  AND CONVERT(DATE, LogDate) <= @DtpToDate
-  AND EMP.EmployeeId = @EmployeeId`);
+      .input("DtpFrmDate", sql.DateTime, DtpFrmDate) // Correct input parameters
+      .input("DtpToDate", sql.DateTime, DtpToDate)   // Correct input parameters
+      .query(`
+        SELECT 
+          CONVERT(NVARCHAR, LogDate, 105) AS PunchDate,
+          FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
+          D.DeviceFName 
+        FROM ${StrTableName} Dev
+        INNER JOIN Devices D ON D.DeviceId = Dev.DeviceId
+        INNER JOIN Employees E ON E.EmployeeCode = Dev.UserId
+        INNER JOIN SKTPayroll.dbo.EmployeeMaster EMP ON EMP.BiometricCode = E.EmployeeCode
+        WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
+          AND CONVERT(DATE, LogDate) <= @DtpToDate
+          AND EMP.EmployeeId = @EmployeeId
+      `);
 
     res.json(result.recordset);
   } catch (err) {
@@ -38,7 +43,6 @@ export const PunchController = async (req, res) => {
     res.status(500).json({ error: "Error fetching data" });
   }
 };
-
 //     const { EmployeeId } = req.params;
 //     const { FromDate, ToDate } = req.query;
 
