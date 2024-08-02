@@ -11,8 +11,22 @@ import sql  from 'mssql';
   },
 };
 
+// Configuration for daivel database
+const daivelConfig = {
+  server: "192.168.50.30",
+  database: "essl",
+  user: "sa",
+  password: "ktm@werty123",
+  options: {
+    encrypt: false,
+  },
+};
+
+
 const pool = new sql.ConnectionPool(config);
-pool
+const daivelPool = new sql.ConnectionPool(daivelConfig);
+
+  pool
   .connect()
   .then(() => {
     console.log("Connect to Sql server");
@@ -20,7 +34,18 @@ pool
   .catch((err) => {
     console.log("Error connecting to SQL Server:",err);
   });
-export default pool;
+///////////////////////
+  daivelPool
+  .connect()
+  .then(() => {
+    console.log("Connected to daivel SQL Server");
+  })
+  .catch((err) => {
+    console.log("Error connecting to daivel SQL Server:", err);
+  });
+
+
+  export {  pool, daivelPool };
 
 // server : 192.168.50.38\DAIVELHO
 // Database : DAIVELP2P

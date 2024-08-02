@@ -1,4 +1,4 @@
-import pool from "../../config/db.js";
+import { pool,daivelPool } from "../../config/db.js";
 import sql from "mssql";
 
 export const PunchController = async (req, res) => {
@@ -29,10 +29,10 @@ export const PunchController = async (req, res) => {
       SELECT DeviceFName as Device, FAC.FactoryName as Factory, EMP.EmployeeId, EmployeeCode as ECNo, EMP.Name as EmpName, 
              CONVERT(DATE, LogDate) as Dte, LogDate as PunchTime
       FROM ${StrTableName} Dev
-      JOIN Employees E ON E.UserId = Dev.UserId
+      JOIN daivel.dbo.Employees E ON E.UserId = Dev.UserId
       JOIN SKTPayroll..EmployeeMaster EMP ON EmployeeCode = EMP.BiometricCode
       JOIN SKTPayroll..FactoryMaster FAC ON EMP.FactoryId = FAC.FactoryId
-      JOIN Devices D ON Dev.DeviceId = D.DeviceId
+      JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
       WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
         AND CONVERT(DATE, LogDate) <= @DtpToDate
         ${Cond}`;
@@ -44,10 +44,10 @@ export const PunchController = async (req, res) => {
         SELECT DeviceFName as Device, FAC.FactoryName as Factory, EMP.EmployeeId, EmployeeCode as ECNo, EMP.Name as EmpName, 
                CONVERT(DATE, LogDate) as Dte, LogDate as PunchTime
         FROM ${StrNextMonthTableName} Dev
-        JOIN Employees E ON E.UserId = Dev.UserId
+        JOIN daivel.dbo.Employees E ON E.UserId = Dev.UserId
         JOIN SKTPayroll..EmployeeMaster EMP ON EmployeeCode = EMP.BiometricCode
         JOIN SKTPayroll..FactoryMaster FAC ON EMP.FactoryId = FAC.FactoryId
-        JOIN Devices D ON Dev.DeviceId = D.DeviceId
+        JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
         WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
           AND CONVERT(DATE, LogDate) <= @DtpToDate
           ${Cond}`;
@@ -55,12 +55,19 @@ export const PunchController = async (req, res) => {
 
     Sqlstr += " ORDER BY EMP.EmployeeId, Dte, PunchTime";
 
-    const result = await pool.request()
+    const resultSKT = await pool.request()
       .input("DtpFrmDate", sql.Date, DtpFrmDate)
       .input("DtpToDate", sql.Date, DtpToDate)
       .query(Sqlstr);
 
-    res.json(result.recordset);
+    const resultDaivel = await daivelPool.request()
+      .input("DtpFrmDate", sql.Date, DtpFrmDate)
+      .input("DtpToDate", sql.Date, DtpToDate)
+      .query(Sqlstr);
+
+    const combinedResults = [...resultSKT.recordset, ...resultDaivel.recordset];
+
+    res.json(combinedResults);
   } catch (err) {
     console.error("Error fetching punch report:", err);
     res.status(500).json({ error: "Error fetching punch report" });
