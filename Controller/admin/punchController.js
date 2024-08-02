@@ -1,7 +1,8 @@
 import sql from 'mssql';
-import { daivelPool, pool } from '../../config/db.js';
+import { pool } from '../../config/db.js';
+
 export const PunchController = async (req, res) => {
-    const { UserId } = req.params;
+    const { EmployeeId } = req.params;
     const { FromDate, ToDate } = req.query;
 
     if (!FromDate || !ToDate) {
@@ -13,29 +14,27 @@ export const PunchController = async (req, res) => {
         const DtpToDate = new Date(ToDate);
         DtpToDate.setHours(23, 59, 59, 999);
 
+        // Fetch BiometricCode from EmployeeMaster
+        const biometricCodeQuery = `
+            SELECT EmployeeCode 
+            FROM SKTPayroll..EmployeeMaster 
+            WHERE EmployeeId = @EmployeeId
+        `;
+
+        const biometricCodeResult = await pool.request()
+            .input('EmployeeId', sql.Int, EmployeeId)
+            .query(biometricCodeQuery);
+
+        if (biometricCodeResult.recordset.length === 0) {
+            return res.status(404).json({ error: 'Employee not found' });
+        }
+
+        const biometricCode = biometricCodeResult.recordset[0].EmployeeCode;
+
+        // Prepare table names and SQL query
         const month = DtpFrmDate.getMonth() + 1;
         const year = DtpFrmDate.getFullYear();
         const StrTableName = `DeviceLogs_${month}_${year}`;
-
-        console.log('Request Params:', { UserId, FromDate, ToDate });
-        console.log('Table Name:', StrTableName);
-
-        // Check if the table exists
-        const checkTableQuery = `
-            SELECT *
-            FROM INFORMATION_SCHEMA.TABLES
-            WHERE TABLE_NAME = @TableName
-        `;
-
-        const tableCheck = await pool.request()
-            .input('TableName', sql.NVarChar, StrTableName)
-            .query(checkTableQuery);
-
-        if (tableCheck.recordset.length === 0) {
-            console.log('Table does not exist:', StrTableName);
-            return res.status(404).json({ error: `Table ${StrTableName} does not exist` });
-        }
-
         let Sqlstr = `
             SELECT DeviceFName as Device, FAC.FactoryName as Factory, EMP.EmployeeId, EmployeeCode as ECNo, EMP.Name as EmpName, 
                    CONVERT(DATE, LogDate) as Dte, LogDate as PunchTime
@@ -46,7 +45,7 @@ export const PunchController = async (req, res) => {
             JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
             WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
               AND CONVERT(DATE, LogDate) <= @DtpToDate
-              AND Dev.UserId = @UserId
+              AND EmployeeCode = @BiometricCode
         `;
 
         if (DtpFrmDate.getMonth() !== DtpToDate.getMonth() || DtpFrmDate.getFullYear() !== DtpToDate.getFullYear()) {
@@ -65,17 +64,15 @@ export const PunchController = async (req, res) => {
                 JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
                 WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
                   AND CONVERT(DATE, LogDate) <= @DtpToDate
-                  AND Dev.UserId = @UserId
+                  AND EmployeeCode = @BiometricCode
             `;
         }
 
         const result = await pool.request()
             .input('DtpFrmDate', sql.DateTime, DtpFrmDate)
             .input('DtpToDate', sql.DateTime, DtpToDate)
-            .input('UserId', sql.Int, UserId)
+            .input('BiometricCode', sql.NVarChar, biometricCode)
             .query(Sqlstr);
-
-        console.log('Query Result:', result.recordset);
 
         res.json(result.recordset);
     } catch (error) {
