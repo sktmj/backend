@@ -14,6 +14,7 @@ import adminProfile from "./Router/admin/profile.js"
 import adminPenalty from "./Router/admin/penalty.js"
 import adminMuster from "./Router/admin/musterRoute.js"
 import adminPermission from "./Router/admin/permissionRoute.js"
+import adminPunch from "./Router/admin/punchRoute.js"
 import morgan from "morgan";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -62,6 +63,7 @@ app.use("/api/v2/pro",adminProfile)
 app.use("/api/v2/pen",adminPenalty)
 app.use("/api/v2/must",adminMuster)
 app.use("/api/v2/per",adminPermission)
+app.use("/api/v2/pun",adminPunch)
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
