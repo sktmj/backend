@@ -36,7 +36,7 @@ export const PunchController = async (req, res) => {
         const year = DtpFrmDate.getFullYear();
         const StrTableName = `DeviceLogs_${month}_${year}`;
         let Sqlstr = `
-            SELECT DeviceFName as Device, FAC.FactoryName as Factory, EMP.EmployeeId, EmployeeCode as ECNo, EMP.Name as EmpName, 
+            SELECT DeviceFName as Device, FAC.FactoryName as Factory, EMP.EmployeeId, EMP.EmployeeCode as ECNo, EMP.Name as EmpName, 
                    CONVERT(DATE, LogDate) as Dte, LogDate as PunchTime
             FROM ${StrTableName} Dev
             JOIN daivel.dbo.Employees E ON E.UserId = Dev.UserId
@@ -45,7 +45,7 @@ export const PunchController = async (req, res) => {
             JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
             WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
               AND CONVERT(DATE, LogDate) <= @DtpToDate
-              AND Dev.UserId= @BiometricCode
+              AND EMP.EmployeeId= @EmployeeId
         `;
 
         if (DtpFrmDate.getMonth() !== DtpToDate.getMonth() || DtpFrmDate.getFullYear() !== DtpToDate.getFullYear()) {
@@ -55,7 +55,7 @@ export const PunchController = async (req, res) => {
 
             Sqlstr += `
                 UNION ALL
-                SELECT DeviceFName as Device, FAC.FactoryName as Factory, EMP.EmployeeId, EmployeeCode as ECNo, EMP.Name as EmpName, 
+                SELECT DeviceFName as Device, FAC.FactoryName as Factory, EMP.EmployeeId, EMP.EmployeeCode as ECNo, EMP.Name as EmpName, 
                        CONVERT(DATE, LogDate) as Dte, LogDate as PunchTime
                 FROM ${nextTable} Dev
                 JOIN daivel.dbo.Employees E ON E.UserId = Dev.UserId
@@ -64,7 +64,7 @@ export const PunchController = async (req, res) => {
                 JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
                 WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
                   AND CONVERT(DATE, LogDate) <= @DtpToDate
-                   AND Dev.UserId= @BiometricCode
+                   AND EMP.EmployeeId= @EmployeeId
             `;
         }
 
