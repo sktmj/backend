@@ -37,6 +37,10 @@ export const PunchController = async (req, res) => {
     const year = DtpFrmDate.getFullYear();
     const StrTableName = `DeviceLogs_${month}_${year}`;
 
+    const Tomonth = DtpToDate.getMonth() + 1;
+    const Toyear = DtpToDate.getFullYear();
+    const NxtStrTableName = `DeviceLogs_${Tomonth}_${Toyear}`;
+
     const result = await daivelPool
       .request()
       .input("EmployeeId", sql.Int, employeeIdFromPayroll)
@@ -48,6 +52,18 @@ export const PunchController = async (req, res) => {
           FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
           D.DeviceFName 
         FROM ${StrTableName} Dev
+        INNER JOIN Devices D ON D.DeviceId = Dev.DeviceId
+        INNER JOIN Employees E ON E.EmployeeCode = Dev.UserId
+        INNER JOIN SKTPayroll.dbo.EmployeeMaster EMP ON EMP.BiometricCode = E.EmployeeCode
+        WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
+          AND CONVERT(DATE, LogDate) <= @DtpToDate
+          AND EMP.EmployeeId = @EmployeeId
+          UNION 
+          SELECT 
+          CONVERT(NVARCHAR, LogDate, 105) AS PunchDate,
+          FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
+          D.DeviceFName 
+        FROM ${NxtStrTableName} Dev
         INNER JOIN Devices D ON D.DeviceId = Dev.DeviceId
         INNER JOIN Employees E ON E.EmployeeCode = Dev.UserId
         INNER JOIN SKTPayroll.dbo.EmployeeMaster EMP ON EMP.BiometricCode = E.EmployeeCode
