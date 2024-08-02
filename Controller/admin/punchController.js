@@ -2,13 +2,16 @@ import sql from "mssql";
 import { pool, daivelPool } from "../../config/db.js";
 
 export const PunchController = async (req, res) => {
-  const { EmployeeId } = req.params;
-  const { FromDate, ToDate } = req.query; // Ensure you are getting FromDate and ToDate from query parameters
+  const { EmployeeId: paramEmployeeId } = req.params;
+  const { FromDate, ToDate, EmployeeId: queryEmployeeId } = req.query;
 
   // Log the received parameters to verify
-  console.log("EmployeeId:", EmployeeId);
+  console.log("EmployeeId from params:", paramEmployeeId);
+  console.log("EmployeeId from query:", queryEmployeeId);
   console.log("FromDate:", FromDate);
   console.log("ToDate:", ToDate);
+
+  const EmployeeId = paramEmployeeId || queryEmployeeId;
 
   try {
     // Step 1: Fetch the EmployeeId from SKTPayroll database
@@ -35,20 +38,6 @@ export const PunchController = async (req, res) => {
     const month = DtpFrmDate.getMonth() + 1;
     const year = DtpFrmDate.getFullYear();
     const StrTableName = `DeviceLogs_${month}_${year}`;
-
-    // Check if the table exists
-    const tableCheckResult = await daivelPool
-      .request()
-      .input("TableName", sql.NVarChar, StrTableName)
-      .query(`
-        SELECT * 
-        FROM INFORMATION_SCHEMA.TABLES
-        WHERE TABLE_NAME = @TableName
-      `);
-
-    if (tableCheckResult.recordset.length === 0) {
-      return res.status(404).json({ error: `Table ${StrTableName} does not exist` });
-    }
 
     const result = await daivelPool
       .request()
