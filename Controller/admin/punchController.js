@@ -26,7 +26,7 @@ export const PunchController = async (req, res) => {
             JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
             WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
               AND CONVERT(DATE, LogDate) <= @DtpToDate
-              AND Dev.UserId= @UserId
+              AND Dev.UserId = @UserId
         `;
 
         if (DtpFrmDate.getMonth() !== DtpToDate.getMonth() || DtpFrmDate.getFullYear() !== DtpToDate.getFullYear()) {
@@ -42,7 +42,7 @@ export const PunchController = async (req, res) => {
                 JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
                 WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
                   AND CONVERT(DATE, LogDate) <= @DtpToDate
-                  AND Dev.UserId= @UserId
+                  AND Dev.UserId = @UserId
             `;
         }
 
@@ -50,7 +50,7 @@ export const PunchController = async (req, res) => {
 
         // Fetch data from SKTPayroll database
         const resultSKT = await pool.request()
-            .input("EmployeeId", sql.Int, EmployeeId)
+            .input("UserId", sql.Int, UserId)
             .input("DtpFrmDate", sql.Date, DtpFrmDate)
             .input("DtpToDate", sql.Date, DtpToDate)
             .query(Sqlstr);
