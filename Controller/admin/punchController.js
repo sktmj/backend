@@ -1,5 +1,5 @@
 import sql from "mssql";
-import { pool } from "../../config/db.js";
+import { pool, daivelPool } from "../../config/db.js";
 
 export const PunchController = async (req, res) => {
   const { EmployeeId } = req.params;
@@ -11,6 +11,23 @@ export const PunchController = async (req, res) => {
   console.log("ToDate:", ToDate);
 
   try {
+    // Step 1: Fetch the EmployeeId from SKTPayroll database
+    const employeeResult = await pool
+      .request()
+      .input("EmployeeId", sql.Int, EmployeeId)
+      .query(`
+        SELECT EmployeeId
+        FROM EmployeeMaster
+        WHERE EmployeeId = @EmployeeId
+      `);
+
+    if (employeeResult.recordset.length === 0) {
+      return res.status(404).json({ error: "Employee not found" });
+    }
+
+    const { EmployeeId: employeeIdFromPayroll } = employeeResult.recordset[0];
+
+    // Step 2: Proceed with the query on the daivel database
     const DtpFrmDate = new Date(FromDate);
     const DtpToDate = new Date(ToDate);
     DtpToDate.setHours(23, 59, 59, 999);
@@ -18,11 +35,12 @@ export const PunchController = async (req, res) => {
     const month = DtpFrmDate.getMonth() + 1;
     const year = DtpFrmDate.getFullYear();
     const StrTableName = `DeviceLogs_${month}_${year}`;
-    const result = await pool
+
+    const result = await daivelPool
       .request()
-      .input("EmployeeId", sql.Int, EmployeeId)
-      .input("DtpFrmDate", sql.DateTime, DtpFrmDate) // Correct input parameters
-      .input("DtpToDate", sql.DateTime, DtpToDate)   // Correct input parameters
+      .input("EmployeeId", sql.Int, employeeIdFromPayroll)
+      .input("DtpFrmDate", sql.DateTime, DtpFrmDate)
+      .input("DtpToDate", sql.DateTime, DtpToDate)
       .query(`
         SELECT 
           CONVERT(NVARCHAR, LogDate, 105) AS PunchDate,
@@ -43,6 +61,8 @@ export const PunchController = async (req, res) => {
     res.status(500).json({ error: "Error fetching data" });
   }
 };
+
+
 //     const { EmployeeId } = req.params;
 //     const { FromDate, ToDate } = req.query;
 
