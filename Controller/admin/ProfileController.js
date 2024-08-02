@@ -1,4 +1,4 @@
-import pool from "../../config/db.js";
+import {pool} from "../../config/db.js";
 
 export const getProfileDetails = async (req, res) => {
   console.log(req.headers.authorization.split(" ")[1], "hiiiiiii");

@@ -1,6 +1,8 @@
 // Declaration Controller
 
-import pool from "../config/db.js";
+import { pool } from "../config/db.js";
+
+
 // Declaration: "",
 // Goal: "",
 // RoleModel: "",

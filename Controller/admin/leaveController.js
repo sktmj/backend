@@ -1,5 +1,5 @@
 import sql from "mssql";
-import pool from "../../config/db.js";
+import {pool} from "../../config/db.js";
 
 export const employeIdcontroller = async (req, res) => {
   // Logic to fetch districts by state ID from the database

@@ -1,4 +1,4 @@
-import pool from "../../config/db.js";
+import {pool} from "../../config/db.js";
 import sql from "mssql";
 
 export const DailyController = async (req, res) => {

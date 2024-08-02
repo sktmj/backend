@@ -2,11 +2,12 @@
 
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import pool from "../config/db.js";
+
 import { sendSMS } from "../helper/Sms.js";
 import { checkIfUserExists } from "../helper/PersonalHelper.js";
 
 import * as dotenv from "dotenv";
+import { pool } from "../config/db.js";
 
 dotenv.config();
 

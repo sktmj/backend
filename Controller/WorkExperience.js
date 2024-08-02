@@ -1,9 +1,10 @@
-import pool from "../config/db.js";
+
 import multer from "multer";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { pool } from "../config/db.js";
 
 
 export const uploadDrivingLic = async (req, res) => {

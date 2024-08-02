@@ -1,4 +1,5 @@
-import pool from "../config/db.js";
+import { pool } from "../config/db.js";
+
 
 export const getlanguages = async (req, res) => {
   try {
@@ -116,7 +117,7 @@ export const getLanguageDetails = async (req, res) => {
       WHERE AppId = @AppId
     `;
 
-    const request = pool.request();
+    const request = daivelPool.request();
     request.input("AppId", AppId);
 
     const result = await request.query(query);

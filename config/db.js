@@ -1,7 +1,7 @@
-import sql  from 'mssql';
+import sql from 'mssql';
 
-
- export const config = {
+// Configuration for SKTPayroll database
+export const sktPayrollConfig = {
   server: "192.168.50.30",
   database: "SKTPayroll",
   user: "sa",
@@ -12,9 +12,9 @@ import sql  from 'mssql';
 };
 
 // Configuration for daivel database
-const daivelConfig = {
+export const daivelConfig = {
   server: "192.168.50.30",
-  database: "essl",
+  database: "essl", // Ensure this is the correct database name
   user: "sa",
   password: "ktm@werty123",
   options: {
@@ -22,30 +22,26 @@ const daivelConfig = {
   },
 };
 
-
-const pool = new sql.ConnectionPool(config);
+const pool = new sql.ConnectionPool(sktPayrollConfig);
 const daivelPool = new sql.ConnectionPool(daivelConfig);
 
-  pool
-  .connect()
+pool.connect()
   .then(() => {
-    console.log("Connect to Sql server");
+    console.log("Connected to SKTPayroll SQL Server");
   })
   .catch((err) => {
-    console.log("Error connecting to SQL Server:",err);
+    console.error("Error connecting to SKTPayroll SQL Server:", err);
   });
-///////////////////////
-  daivelPool
-  .connect()
+
+daivelPool.connect()
   .then(() => {
     console.log("Connected to daivel SQL Server");
   })
   .catch((err) => {
-    console.log("Error connecting to daivel SQL Server:", err);
+    console.error("Error connecting to daivel SQL Server:", err);
   });
 
-
-  export {  pool, daivelPool };
+export { pool, daivelPool };
 
 // server : 192.168.50.38\DAIVELHO
 // Database : DAIVELP2P

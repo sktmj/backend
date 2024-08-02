@@ -1,5 +1,6 @@
-import pool from "../config/db.js";
+
 import jwt from "jsonwebtoken"; // Import JWT for authentication
+import { pool } from "../config/db.js";
 
 const JWT_KEY = "123dd"
 

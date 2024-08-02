@@ -1,7 +1,7 @@
 // Your controller.js
 import sql from "mssql";
-import pool from "../config/db.js";
-import { config } from "../config/db.js";
+
+import { pool, sktPayrollConfig } from "../config/db.js";
 
 export const getReligionController = async (req, res) => {
   try {
@@ -22,7 +22,7 @@ export const getCastesByReligion = async (req, res) => {
     }
 
     // Connect to the database using the provided config
-    const pool = await sql.connect(config);
+    const pool = await sql.connect(sktPayrollConfig);
     const religionId = parseInt(religion_gid);
 
     // Execute the SQL query to fetch castes by religion

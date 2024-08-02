@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import pool from "../../config/db.js";
+import {pool} from "../../config/db.js";
 import sql from "mssql";
 const JWT_KEY = "your_secret_key_here"; // Make sure to use a secure key
 

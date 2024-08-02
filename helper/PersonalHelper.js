@@ -1,5 +1,5 @@
 import sql from "mssql";
-import { config } from "../config/db.js";
+import { sktPayrollConfig } from "../config/db.js";
 
 export const getCastesByReligion = async (religion_gid) => {
   try {
@@ -7,7 +7,7 @@ export const getCastesByReligion = async (religion_gid) => {
       throw new Error("Invalid religion_gid. Must be a number.");
     }
 
-    const pool = await sql.connect(config);
+    const pool = await sql.connect(sktPayrollConfig);
     religion_gid = parseInt(religion_gid);
 
     const result = await pool
@@ -27,7 +27,7 @@ export const getCastesByReligion = async (religion_gid) => {
  export const checkIfUserExists = async (UserName) => {
   try {
     // Create a new SQL connection pool
-    const pool = await sql.connect(config);
+    const pool = await sql.connect(sktPayrollConfig);
 
     // Prepare the SQL query
     const query = `SELECT COUNT(*) AS userCount FROM ApplicationForm WHERE UserName = @UserName`;

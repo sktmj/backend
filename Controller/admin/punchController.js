@@ -1,5 +1,6 @@
-import { pool,daivelPool } from "../../config/db.js";
+
 import sql from "mssql";
+import { daivelPool, pool } from "../../config/db.js";
 
 export const PunchController = async (req, res) => {
   const { FromDate, ToDate, FactoryId, EmployeeId } = req.query;
