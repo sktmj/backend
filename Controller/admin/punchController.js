@@ -2,16 +2,14 @@ import sql from "mssql";
 import { pool, daivelPool } from "../../config/db.js";
 
 export const PunchController = async (req, res) => {
-  const { EmployeeId: paramEmployeeId } = req.params;
-  const { FromDate, ToDate, EmployeeId: queryEmployeeId } = req.query;
+  // Extract EmployeeId from req.params
+  const { EmployeeId } = req.params;
+  const { FromDate, ToDate } = req.query;
 
   // Log the received parameters to verify
-  console.log("EmployeeId from params:", paramEmployeeId);
-  console.log("EmployeeId from query:", queryEmployeeId);
+  console.log("EmployeeId from params:", EmployeeId);
   console.log("FromDate:", FromDate);
   console.log("ToDate:", ToDate);
-
-  const EmployeeId = paramEmployeeId || queryEmployeeId;
 
   try {
     // Step 1: Fetch the EmployeeId from SKTPayroll database
@@ -64,8 +62,6 @@ export const PunchController = async (req, res) => {
     res.status(500).json({ error: "Error fetching data" });
   }
 };
-
-
 //     const { EmployeeId } = req.params;
 //     const { FromDate, ToDate } = req.query;
 
