@@ -81,7 +81,7 @@ export const PunchController = async (req, res) => {
         WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
           AND CONVERT(DATE, LogDate) <= @DtpToDate
           AND EMP.EmployeeId = @EmployeeId
-        ORDER BY LogDate ASC
+        ORDER BY LogDate
       `);
 
     res.json(result.recordset);
