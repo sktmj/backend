@@ -16,7 +16,7 @@ export const PunchController = async (req, res) => {
     DtpToDate.setHours(23); // Set to end of the day
 
 
-    const StrTableName = `DeviceLogs_${DtpFrmDate.getMonth() + 1}_${DtpFrmDate.getFullYear()}`;
+    const StrTableName = `DeviceLogs_${DtpFrmDate.getMonth() + 1}_${DtpFrmDate.getFullYear()}`
     let Sqlstr = `
       SELECT DeviceFName as Device, FAC.FactoryName as Factory, EMP.EmployeeId, EmployeeCode as ECNo, EMP.Name as EmpName, 
              CONVERT(DATE, LogDate) as Dte, LogDate as PunchTime
@@ -27,7 +27,7 @@ export const PunchController = async (req, res) => {
       JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
       WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
         AND CONVERT(DATE, LogDate) <= @DtpToDate
-        AND EMP.EmployeeId = @EmployeeId}`;
+        AND EMP.EmployeeId = @EmployeeId}`
 
     if (DtpFrmDate.getMonth() !== DtpToDate.getMonth()) {
       const StrNextMonthTableName = `DeviceLogs_${DtpToDate.getMonth() + 1}_${DtpToDate.getFullYear()}`;
@@ -42,8 +42,7 @@ export const PunchController = async (req, res) => {
         JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
         WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
           AND CONVERT(DATE, LogDate) <= @DtpToDate
-          AND EMP.EmployeeId = @EmployeeId`;
-    }
+          AND EMP.EmployeeId = @EmployeeId`}
     // Fetch data from SKTPayroll database
     const resultSKT = await pool.request()
     .input("EmployeeId", sql.Int, EmployeeId)
