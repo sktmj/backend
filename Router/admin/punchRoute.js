@@ -3,7 +3,7 @@ import { PunchController } from "../../Controller/admin/punchController.js";
 
 const router = express.Router();
 
-router.get("/punch/:EmployeeId", PunchController);
+router.get("/punch/:UserId", PunchController);
 
 
 // export the router
