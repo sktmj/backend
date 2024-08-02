@@ -40,7 +40,7 @@ export const PunchController = async (req, res) => {
                    CONVERT(DATE, LogDate) as Dte, LogDate as PunchTime
             FROM ${StrTableName} Dev
             JOIN daivel.dbo.Employees E ON E.UserId = Dev.UserId
-            JOIN SKTPayroll..EmployeeMaster EMP ON  EMP.EmployeeCode = EMP.BiometricCode
+            JOIN SKTPayroll..EmployeeMaster EMP ON  E.EmployeeCode = EMP.BiometricCode
             JOIN SKTPayroll..FactoryMaster FAC ON EMP.FactoryId = FAC.FactoryId
             JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
             WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
@@ -59,7 +59,7 @@ export const PunchController = async (req, res) => {
                        CONVERT(DATE, LogDate) as Dte, LogDate as PunchTime
                 FROM ${nextTable} Dev
                 JOIN daivel.dbo.Employees E ON E.UserId = Dev.UserId
-                JOIN SKTPayroll..EmployeeMaster EMP ON  EMP.EmployeeCode = EMP.BiometricCode
+                JOIN SKTPayroll..EmployeeMaster EMP ON  E.EmployeeCode = EMP.BiometricCode
                 JOIN SKTPayroll..FactoryMaster FAC ON EMP.FactoryId = FAC.FactoryId
                 JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
                 WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
