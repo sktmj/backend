@@ -57,7 +57,7 @@ export const PunchController = async (req, res) => {
       .input("DtpToDate", sql.DateTime, DtpToDate)
       .query(`
         SELECT 
-          CONVERT(NVARCHAR, LogDate, 105) AS PunchDate,
+          CONVERT(NVARCHAR, LogDate, 105) AS LogDate,
           FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
           D.DeviceFName,
           Dev.DeviceLogId
@@ -70,7 +70,7 @@ export const PunchController = async (req, res) => {
           AND EMP.EmployeeId = @EmployeeId
         UNION 
         SELECT 
-          CONVERT(NVARCHAR, LogDate, 105) AS PunchDate,
+          CONVERT(NVARCHAR, LogDate, 105) AS LogDate,
           FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
           D.DeviceFName,
           Dev.DeviceLogId
