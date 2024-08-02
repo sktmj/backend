@@ -60,7 +60,7 @@ export const PunchController = async (req, res) => {
           CONVERT(NVARCHAR, LogDate, 105) AS PunchDate,
           FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
           D.DeviceFName,
-          Dev.DeviceLoginId
+          Dev.DeviceLogId
         FROM ${StrTableName} Dev
         INNER JOIN Devices D ON D.DeviceId = Dev.DeviceId
         INNER JOIN Employees E ON E.EmployeeCode = Dev.UserId
@@ -73,7 +73,7 @@ export const PunchController = async (req, res) => {
           CONVERT(NVARCHAR, LogDate, 105) AS PunchDate,
           FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
           D.DeviceFName,
-          Dev.DeviceLoginId
+          Dev.DeviceLogId
         FROM ${NxtStrTableName} Dev
         INNER JOIN Devices D ON D.DeviceId = Dev.DeviceId
         INNER JOIN Employees E ON E.EmployeeCode = Dev.UserId
@@ -81,7 +81,7 @@ export const PunchController = async (req, res) => {
         WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
           AND CONVERT(DATE, LogDate) <= @DtpToDate
           AND EMP.EmployeeId = @EmployeeId
-        ORDER BY Dev.DeviceLoginId ASC
+        ORDER BY Dev.DeviceLogId ASC
       `);
 
     res.json(result.recordset);
