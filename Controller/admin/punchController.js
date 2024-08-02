@@ -1,9 +1,9 @@
-
 import sql from "mssql";
 import { daivelPool, pool } from "../../config/db.js";
 
 export const PunchController = async (req, res) => {
-  const { FromDate, ToDate, FactoryId, EmployeeId } = req.query;
+    const { EmployeeId } = req.params;
+  const { FromDate, ToDate} = req.query;
 
   // Ensure FromDate and ToDate are provided
   if (!FromDate || !ToDate) {
@@ -13,17 +13,8 @@ export const PunchController = async (req, res) => {
   try {
     const DtpFrmDate = new Date(FromDate);
     const DtpToDate = new Date(ToDate);
-    DtpToDate.setHours(23); // Add 23 hours to DtpToDate
+    DtpToDate.setHours(23); // Set to end of the day
 
-    let Cond = "";
-
-    if (FactoryId > 0) {
-      Cond += ` AND EMP.FactoryId = ${FactoryId}`;
-    }
-
-    if (EmployeeId > 0) {
-      Cond += ` AND EMP.EmployeeId = ${EmployeeId}`;
-    }
 
     const StrTableName = `DeviceLogs_${DtpFrmDate.getMonth() + 1}_${DtpFrmDate.getFullYear()}`;
     let Sqlstr = `
@@ -36,7 +27,7 @@ export const PunchController = async (req, res) => {
       JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
       WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
         AND CONVERT(DATE, LogDate) <= @DtpToDate
-        ${Cond}`;
+        AND EMP.EmployeeId = @EmployeeId}`;
 
     if (DtpFrmDate.getMonth() !== DtpToDate.getMonth()) {
       const StrNextMonthTableName = `DeviceLogs_${DtpToDate.getMonth() + 1}_${DtpToDate.getFullYear()}`;
@@ -51,26 +42,28 @@ export const PunchController = async (req, res) => {
         JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
         WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
           AND CONVERT(DATE, LogDate) <= @DtpToDate
-          ${Cond}`;
+          AND EMP.EmployeeId = @EmployeeId`;
     }
-
-    Sqlstr += " ORDER BY EMP.EmployeeId, Dte, PunchTime";
-
+    // Fetch data from SKTPayroll database
     const resultSKT = await pool.request()
+    .input("EmployeeId", sql.Int, EmployeeId)
       .input("DtpFrmDate", sql.Date, DtpFrmDate)
       .input("DtpToDate", sql.Date, DtpToDate)
       .query(Sqlstr);
 
+    // Fetch data from daivel database
     const resultDaivel = await daivelPool.request()
+    .input("EmployeeId", sql.Int, EmployeeId)
       .input("DtpFrmDate", sql.Date, DtpFrmDate)
       .input("DtpToDate", sql.Date, DtpToDate)
       .query(Sqlstr);
 
+    // Combine results from both databases
     const combinedResults = [...resultSKT.recordset, ...resultDaivel.recordset];
 
     res.json(combinedResults);
   } catch (err) {
-    console.error("Error fetching punch report:", err);
+    console.error("Error fetching punch report:", err.message);
     res.status(500).json({ error: "Error fetching punch report" });
   }
 };
