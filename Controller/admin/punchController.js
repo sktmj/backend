@@ -61,7 +61,7 @@ export const PunchController = async (req, res) => {
           FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
           D.DeviceFName,
           Dev.DeviceLogId
-        FROM ${StrTableName} Dev
+        FROM ${NxtStrTableName} Dev
         INNER JOIN Devices D ON D.DeviceId = Dev.DeviceId
         INNER JOIN Employees E ON E.EmployeeCode = Dev.UserId
         INNER JOIN SKTPayroll.dbo.EmployeeMaster EMP ON EMP.BiometricCode = E.EmployeeCode
@@ -74,7 +74,7 @@ export const PunchController = async (req, res) => {
           FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
           D.DeviceFName,
           Dev.DeviceLogId
-        FROM ${NxtStrTableName} Dev
+        FROM ${StrTableName} Dev
         INNER JOIN Devices D ON D.DeviceId = Dev.DeviceId
         INNER JOIN Employees E ON E.EmployeeCode = Dev.UserId
         INNER JOIN SKTPayroll.dbo.EmployeeMaster EMP ON EMP.BiometricCode = E.EmployeeCode
