@@ -36,6 +36,20 @@ export const PunchController = async (req, res) => {
     const year = DtpFrmDate.getFullYear();
     const StrTableName = `DeviceLogs_${month}_${year}`;
 
+    // Check if the table exists
+    const tableCheckResult = await daivelPool
+      .request()
+      .input("TableName", sql.NVarChar, StrTableName)
+      .query(`
+        SELECT * 
+        FROM INFORMATION_SCHEMA.TABLES
+        WHERE TABLE_NAME = @TableName
+      `);
+
+    if (tableCheckResult.recordset.length === 0) {
+      return res.status(404).json({ error: `Table ${StrTableName} does not exist` });
+    }
+
     const result = await daivelPool
       .request()
       .input("EmployeeId", sql.Int, employeeIdFromPayroll)
