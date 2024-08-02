@@ -45,7 +45,7 @@ export const PunchController = async (req, res) => {
             JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
             WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
               AND CONVERT(DATE, LogDate) <= @DtpToDate
-              AND EmployeeCode = @BiometricCode
+              AND Dev.UserId= @BiometricCode
         `;
 
         if (DtpFrmDate.getMonth() !== DtpToDate.getMonth() || DtpFrmDate.getFullYear() !== DtpToDate.getFullYear()) {
@@ -64,7 +64,7 @@ export const PunchController = async (req, res) => {
                 JOIN daivel.dbo.Devices D ON Dev.DeviceId = D.DeviceId
                 WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
                   AND CONVERT(DATE, LogDate) <= @DtpToDate
-                  AND EmployeeCode = @BiometricCode
+                   AND Dev.UserId= @BiometricCode
             `;
         }
 
