@@ -2,7 +2,7 @@ import sql from 'mssql';
 import { daivelPool, pool } from '../../config/db.js';
 
 export const PunchController = async (req, res) => {
-    const { EmployeeId } = req.params;
+    const { UserId } = req.params;
     const { FromDate, ToDate } = req.query;
 
     if (!FromDate || !ToDate) {
@@ -71,7 +71,7 @@ export const PunchController = async (req, res) => {
         const result = await pool.request()
             .input('DtpFrmDate', sql.DateTime, DtpFrmDate)
             .input('DtpToDate', sql.DateTime, DtpToDate)
-            .input('UserId', sql.Int, EmployeeId)
+            .input('UserId', sql.Int, UserId)
             .query(Sqlstr);
 
         res.json(result.recordset);
