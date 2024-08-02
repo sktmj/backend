@@ -2,7 +2,6 @@ import sql from "mssql";
 import { pool, daivelPool } from "../../config/db.js";
 
 export const PunchController = async (req, res) => {
-  // Extract EmployeeId from req.params
   const { EmployeeId } = req.params;
   const { FromDate, ToDate } = req.query;
 
@@ -11,8 +10,21 @@ export const PunchController = async (req, res) => {
   console.log("FromDate:", FromDate);
   console.log("ToDate:", ToDate);
 
+  // Validate and parse date parameters
+  let DtpFrmDate, DtpToDate;
   try {
-    // Step 1: Fetch the EmployeeId from SKTPayroll database
+    DtpFrmDate = new Date(FromDate);
+    DtpToDate = new Date(ToDate);
+    if (isNaN(DtpFrmDate) || isNaN(DtpToDate)) {
+      return res.status(400).json({ error: "Invalid date format" });
+    }
+    DtpToDate.setHours(23, 59, 59, 999);
+  } catch (error) {
+    return res.status(400).json({ error: "Invalid date parameters" });
+  }
+
+  try {
+    // Fetch the EmployeeId from SKTPayroll database
     const employeeResult = await pool
       .request()
       .input("EmployeeId", sql.Int, EmployeeId)
@@ -28,11 +40,7 @@ export const PunchController = async (req, res) => {
 
     const { EmployeeId: employeeIdFromPayroll } = employeeResult.recordset[0];
 
-    // Step 2: Proceed with the query on the daivel database
-    const DtpFrmDate = new Date(FromDate);
-    const DtpToDate = new Date(ToDate);
-    DtpToDate.setHours(23, 59, 59, 999);
-
+    // Generate table names
     const month = DtpFrmDate.getMonth() + 1;
     const year = DtpFrmDate.getFullYear();
     const StrTableName = `DeviceLogs_${month}_${year}`;
@@ -41,6 +49,7 @@ export const PunchController = async (req, res) => {
     const Toyear = DtpToDate.getFullYear();
     const NxtStrTableName = `DeviceLogs_${Tomonth}_${Toyear}`;
 
+    // Fetch punch data from both tables
     const result = await daivelPool
       .request()
       .input("EmployeeId", sql.Int, employeeIdFromPayroll)
@@ -58,8 +67,8 @@ export const PunchController = async (req, res) => {
         WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
           AND CONVERT(DATE, LogDate) <= @DtpToDate
           AND EMP.EmployeeId = @EmployeeId
-          UNION 
-          SELECT 
+        UNION 
+        SELECT 
           CONVERT(NVARCHAR, LogDate, 105) AS PunchDate,
           FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
           D.DeviceFName 
@@ -70,7 +79,7 @@ export const PunchController = async (req, res) => {
         WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
           AND CONVERT(DATE, LogDate) <= @DtpToDate
           AND EMP.EmployeeId = @EmployeeId
-          ORDER BY Dev.DeviceLoginId ASC
+        ORDER BY Dev.DeviceLoginId ASC
       `);
 
     res.json(result.recordset);
@@ -79,6 +88,7 @@ export const PunchController = async (req, res) => {
     res.status(500).json({ error: "Error fetching data" });
   }
 };
+
 //     const { EmployeeId } = req.params;
 //     const { FromDate, ToDate } = req.query;
 
