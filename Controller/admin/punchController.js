@@ -27,8 +27,7 @@ export const PunchController = async (req, res) => {
     // Fetch the EmployeeId from SKTPayroll database
     const employeeResult = await pool
       .request()
-      .input("EmployeeId", sql.Int, EmployeeId)
-      .query(`
+      .input("EmployeeId", sql.Int, EmployeeId).query(`
         SELECT EmployeeId
         FROM EmployeeMaster
         WHERE EmployeeId = @EmployeeId
@@ -54,21 +53,7 @@ export const PunchController = async (req, res) => {
       .request()
       .input("EmployeeId", sql.Int, employeeIdFromPayroll)
       .input("DtpFrmDate", sql.DateTime, DtpFrmDate)
-      .input("DtpToDate", sql.DateTime, DtpToDate)
-      .query(`
-        SELECT 
-          CONVERT(NVARCHAR, LogDate, 105) AS LogDate,
-          FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
-          D.DeviceFName,
-          Dev.DeviceLogId
-        FROM ${NxtStrTableName} Dev
-        INNER JOIN Devices D ON D.DeviceId = Dev.DeviceId
-        INNER JOIN Employees E ON E.EmployeeCode = Dev.UserId
-        INNER JOIN SKTPayroll.dbo.EmployeeMaster EMP ON EMP.BiometricCode = E.EmployeeCode
-        WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
-          AND CONVERT(DATE, LogDate) <= @DtpToDate
-          AND EMP.EmployeeId = @EmployeeId
-        UNION 
+      .input("DtpToDate", sql.DateTime, DtpToDate).query(`
         SELECT 
           CONVERT(NVARCHAR, LogDate, 105) AS LogDate,
           FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
@@ -81,7 +66,20 @@ export const PunchController = async (req, res) => {
         WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
           AND CONVERT(DATE, LogDate) <= @DtpToDate
           AND EMP.EmployeeId = @EmployeeId
-        ORDER BY LogDate
+        UNION 
+        SELECT 
+          CONVERT(NVARCHAR, LogDate, 105) AS LogDate,
+          FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
+          D.DeviceFName,
+          Dev.DeviceLogId
+        FROM ${NxtStrTableName} Dev
+        INNER JOIN Devices D ON D.DeviceId = Dev.DeviceId
+        INNER JOIN Employees E ON E.EmployeeCode = Dev.UserId
+        INNER JOIN SKTPayroll.dbo.EmployeeMaster EMP ON EMP.BiometricCode = E.EmployeeCode
+        WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
+          AND CONVERT(DATE, LogDate) <= @DtpToDate
+          AND EMP.EmployeeId = @EmployeeId
+        ORDER BY LogDate desc
       `);
 
     res.json(result.recordset);
@@ -90,6 +88,3 @@ export const PunchController = async (req, res) => {
     res.status(500).json({ error: "Error fetching data" });
   }
 };
-
-
-
