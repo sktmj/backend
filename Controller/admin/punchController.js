@@ -54,7 +54,7 @@ export const PunchController = async (req, res) => {
       .input("EmployeeId", sql.Int, employeeIdFromPayroll)
       .input("DtpFrmDate", sql.DateTime, DtpFrmDate)
       .input("DtpToDate", sql.DateTime, DtpToDate).query(`
-        select PunchDate,PunchTime, DeviceFName ,DeviceLogId
+        select convert(date,PunchDate,103) as PunchDate,PunchTime, DeviceFName ,DeviceLogId
 from 
 (
         SELECT 
