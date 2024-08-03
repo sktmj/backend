@@ -84,7 +84,7 @@ from
           AND CONVERT(DATE, LogDate) <= @DtpToDate
           AND EMP.EmployeeId = @EmployeeId
       )tbl
-        ORDER BY 
+        ORDER BY LogDate
       `);
 
     res.json(result.recordset);
