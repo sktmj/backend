@@ -58,7 +58,7 @@ export const PunchController = async (req, res) => {
 from 
 (
         SELECT 
-          CONVERT(Date, Logdate,105) AS PunchDate,
+          CONVERT(Date, Logdate) AS PunchDate,
           FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
           D.DeviceFName,
           Dev.DeviceLogId
@@ -71,7 +71,7 @@ from
           AND EMP.EmployeeId = @EmployeeId
         UNION 
         SELECT 
-          CONVERT(Date, Logdate,105) AS PunchDate,
+          CONVERT(Date, Logdate) AS PunchDate,
           FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
           D.DeviceFName,
           Dev.DeviceLogId
