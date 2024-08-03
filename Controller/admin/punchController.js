@@ -54,6 +54,10 @@ export const PunchController = async (req, res) => {
       .input("EmployeeId", sql.Int, employeeIdFromPayroll)
       .input("DtpFrmDate", sql.DateTime, DtpFrmDate)
       .input("DtpToDate", sql.DateTime, DtpToDate).query(`
+        select convert(nvarchar,PunchDate,105),PunchTime, DeviceFName ,DeviceLogId,
+LogDate
+from 
+(
         SELECT 
           CONVERT(Date, LogDate, 105) AS LogDate,
           FORMAT(Dev.LogDate, 'HH:mm tt') AS PunchTime,
@@ -79,7 +83,7 @@ export const PunchController = async (req, res) => {
         WHERE CONVERT(DATE, LogDate) >= @DtpFrmDate
           AND CONVERT(DATE, LogDate) <= @DtpToDate
           AND EMP.EmployeeId = @EmployeeId
-      
+      )tbl
         ORDER BY LogDate
       `);
 
