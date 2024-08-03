@@ -54,7 +54,7 @@ export const PunchController = async (req, res) => {
       .input("EmployeeId", sql.Int, employeeIdFromPayroll)
       .input("DtpFrmDate", sql.DateTime, DtpFrmDate)
       .input("DtpToDate", sql.DateTime, DtpToDate).query(`
-        select convert(Datetime,PunchDate) as PunchDate,PunchTime, DeviceFName ,DeviceLogId
+        select convert(Date,PunchDate) as PunchDate,PunchTime, DeviceFName ,DeviceLogId
 from 
 (
         SELECT 
@@ -83,7 +83,7 @@ from
           AND CONVERT(DATE, LogDate) <= @DtpToDate
           AND EMP.EmployeeId = @EmployeeId
       )tbl
-           ORDER BY PunchDate desc
+           ORDER BY PunchDate 
       `);
 
     res.json(result.recordset);
