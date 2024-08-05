@@ -127,3 +127,43 @@ export const insertLeaveController = async (req, res) => {
       .json({ error: "Error submitting leave", details: err.message });
   }
 };
+
+
+
+
+
+export const getLeaveReportController = async(req,res)=>{
+    const { EmployeeId } = req.params;
+    const { FromDate, ToDate } = req.query;
+  
+    // Log the received parameters to verify
+    console.log('EmployeeId:', EmployeeId);
+    console.log('FromDate:', FromDate);
+    console.log('ToDate:', ToDate);
+  
+    // Ensure FromDate and ToDate are provided
+    if (!FromDate || !ToDate) {
+      return res.status(400).json({ error: "FromDate and ToDate are required" });
+    }
+  
+    try {
+      const request = pool
+      .request()
+      .input("Case", sql.NVarChar, "List")
+        .input("EmployeeId", sql.Int, EmployeeId)
+        .input("FromDate", sql.Date, FromDate)
+        .input("ToDate", sql.Date, ToDate)
+        const result = await request.execute("SP_LeaveEntry");
+
+    res.json({
+      success: true,
+      message: "GetLeave submitted successfully",
+      result: result.recordset,
+    });
+  } catch (err) {
+    console.error("Error submitting Getleave:", err);
+    res
+      .status(500)
+      .json({ error: "Error submitting Getleave", details: err.message });
+  }
+};
