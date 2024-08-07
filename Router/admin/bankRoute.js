@@ -4,7 +4,7 @@ import { BankController } from "../../Controller/admin/bankController.js";
 
 const router = express.Router();
 
-router.get("/bank/:EmployeeId",BankController)
+router.get("/bank/:EmployeeId", BankController);
 
 
 
