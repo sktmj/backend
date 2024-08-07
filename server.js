@@ -67,7 +67,8 @@ app.use("/api/v2/must",adminMuster)
 app.use("/api/v2/per",adminPermission)
 app.use("/api/v2/pun",adminPunch)
 app.use("/api/v2/pay",adminPaySlip)
-app.use("api/v2/info",adminBank)
+app.use("/api/v2/info", adminBank);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
