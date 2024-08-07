@@ -16,6 +16,7 @@ import adminMuster from "./Router/admin/musterRoute.js"
 import adminPermission from "./Router/admin/permissionRoute.js"
 import adminPunch from "./Router/admin/punchRoute.js"
 import adminPaySlip from "./Router/admin/paySlipRoute.js"
+import adminBank from "./Router/admin/bankRoute.js"
 import morgan from "morgan";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -66,6 +67,7 @@ app.use("/api/v2/must",adminMuster)
 app.use("/api/v2/per",adminPermission)
 app.use("/api/v2/pun",adminPunch)
 app.use("/api/v2/pay",adminPaySlip)
+app.use("api/v2/info",adminBank)
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
