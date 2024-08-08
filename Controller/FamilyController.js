@@ -117,7 +117,7 @@ export const getLanguageDetails = async (req, res) => {
       WHERE AppId = @AppId
     `;
 
-    const request = daivelPool.request();
+    const request = pool.request();
     request.input("AppId", AppId);
 
     const result = await request.query(query);
