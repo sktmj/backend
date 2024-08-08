@@ -11,7 +11,7 @@ const __dirname = dirname(__filename);
 const profilePicDir = join(__dirname, '../public/uploads');
 const mobilePicDir = join(__dirname, '../public/mobilepics');
 const resumeDir = join(__dirname, '../public/resumes');
-const CarLicenseDocDir = join(__dirname, '../public/license');
+const CarLicenseDocDir = join(__dirname, '//192.168.50.32/iis/PAYROLL/Images/CarLicenseDoc');
 
 const ensureDirExists = (dir) => {
   if (!fs.existsSync(dir)) {
