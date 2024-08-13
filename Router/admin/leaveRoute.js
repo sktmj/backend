@@ -1,5 +1,6 @@
 import express from "express";
 import { employeIdcontroller, getLeaveController, getLeaveReportController, insertLeaveController, leavePhotoController, OrganisationController, RequestController } from "../../Controller/admin/leaveController.js";
+import multipleUpload from "../../Middleware/Multer.js";
 
 const router = express.Router();
 
