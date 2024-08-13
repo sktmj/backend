@@ -1,43 +1,27 @@
 import multer from 'multer';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import fs from 'fs';
+import path from 'path';
 
-// Determine __dirname for ES module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Define the base path to your mounted directory
+const baseUploadDir = '/mnt/shared_images';
+const applicationImageDir = path.join(baseUploadDir, 'ApplicationImage');
 
-// Ensure the directories exist
-const profilePicDir = join(__dirname, '../public/uploads');
-const mobilePicDir = join(__dirname, '../public/mobilepics');
-const resumeDir = join(__dirname, '../public/resumes');
-const CarLicenseDocDir = join(__dirname, '//192.168.50.32/iis/PAYROLL/Images/CarLicenseDoc');
-
-const ensureDirExists = (dir) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-    console.log(`Directory ${dir} created`);
-  } else {
-    console.log(`Directory ${dir} already exists`);
-  }
-};
-
-ensureDirExists(profilePicDir);
-ensureDirExists(mobilePicDir);
-ensureDirExists(resumeDir);
-ensureDirExists(CarLicenseDocDir);
-
+// Configure multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    let uploadDir = profilePicDir; // Default directory
-    if (req.originalUrl.includes('mobilepic')) {
-      uploadDir = mobilePicDir;
+    let uploadDir = baseUploadDir; // Default directory
+
+    // Determine the specific folder based on the request path or type
+    if (req.originalUrl.includes('CarLicenseDoc')) {
+      uploadDir = path.join(baseUploadDir, 'CarLicenseDoc');
+    } else if (req.originalUrl.includes('profilepic')) {
+      uploadDir = path.join(applicationImageDir, 'ProfilePics');
     } else if (req.originalUrl.includes('resume')) {
-      uploadDir = resumeDir;
-    } else if (req.originalUrl.includes('CarLicenseDoc')) {
-      uploadDir = CarLicenseDocDir;
+      uploadDir = path.join(applicationImageDir, 'Resume');
+    } else if (req.originalUrl.includes('mobile')) {
+      uploadDir = path.join(applicationImageDir, 'MobilePics');
     }
-    console.log("Saving file to:", uploadDir);
+
+    // Ensure the directory exists
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
@@ -46,6 +30,7 @@ const storage = multer.diskStorage({
   }
 });
 
+// Initialize multer with storage configuration
 const multipleUpload = multer({ 
   storage,
   fileFilter: (req, file, cb) => {
@@ -55,4 +40,3 @@ const multipleUpload = multer({
 });
 
 export default multipleUpload;
- 
