@@ -26,7 +26,7 @@ export const uploadDrivingLic = async (req, res) => {
     }
 
     const fileName = req.file.filename; // Use multer's generated filename
-    const query = `UPDATE ApplicationForm SET CarLicenseDoc = @CarLicenseDoc WHERE AppId = @AppId`;
+    const query = "UPDATE ApplicationForm SET CarLicenseDoc = @CarLicenseDoc WHERE AppId = @AppId";
     const request = pool.request();
     request.input("CarLicenseDoc", fileName);
     request.input("AppId", AppId);
@@ -35,17 +35,17 @@ export const uploadDrivingLic = async (req, res) => {
 
     // Check if any rows were affected
     if (result.rowsAffected && result.rowsAffected[0] > 0) {
-      console.log("Driving Lic  updated successfully");
+      console.log("Driving License updated successfully");
       res.status(200).json({
         success: true,
-        message: "Driving Lic updated successfully",
+        message: "Driving License updated successfully",
       });
     } else {
-      console.error("Failed to update Driving Lic");
-      res.status(404).json({ success: false, message: "Failed to update Driving Lic" });
+      console.error("Failed to update Driving License");
+      res.status(404).json({ success: false, message: "Failed to update Driving License" });
     }
   } catch (error) {
-    console.error("Error updating Driving Lic:", error.message);
+    console.error("Error updating Driving License:", error.message);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

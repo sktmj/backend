@@ -1,41 +1,26 @@
 import multer from 'multer';
 import path from 'path';
 
-// Define the base path to your mounted directory
 const baseUploadDir = '/mnt/shared_images';
-const applicationImageDir = path.join(baseUploadDir, 'ApplicationImage');
+const carLicenseDir = path.join(baseUploadDir, 'CarLicenseDoc');
 
-// Configure multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    let uploadDir = baseUploadDir; // Default directory
-
-    // Determine the specific folder based on the request path or type
-    if (req.originalUrl.includes('CarLicenseDoc')) {
-      uploadDir = path.join(baseUploadDir, 'CarLicenseDoc');
-    } else if (req.originalUrl.includes('profilepic')) {
-      uploadDir = path.join(applicationImageDir, 'ProfilePics');
-    } else if (req.originalUrl.includes('resume')) {
-      uploadDir = path.join(applicationImageDir, 'Resume');
-    } else if (req.originalUrl.includes('mobile')) {
-      uploadDir = path.join(applicationImageDir, 'MobilePics');
-    }
-
-    // Ensure the directory exists
-    cb(null, uploadDir);
+    cb(null, carLicenseDir); // Save in the CarLicenseDoc directory
   },
   filename: (req, file, cb) => {
-    console.log("Saving file as:", file.originalname);
-    cb(null, file.originalname);
+    cb(null, Date.now() + path.extname(file.originalname)); // Unique file name
   }
 });
 
-// Initialize multer with storage configuration
 const multipleUpload = multer({ 
   storage,
   fileFilter: (req, file, cb) => {
-    console.log("Received file with fieldname:", file.fieldname);
-    cb(null, true);
+    if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type'));
+    }
   }
 });
 
