@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { pool } from "../config/db.js";
 
-
 export const uploadDrivingLic = async (req, res) => {
   try {
     const AppId = req.headers.authorization ? req.headers.authorization.split(" ")[1] : null;
