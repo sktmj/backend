@@ -1,6 +1,13 @@
 import sql from "mssql";
 import {pool} from "../../config/db.js";
 
+
+export const leavePhotoController = async (req, res) => {
+  // Assuming you don't need to fetch from the database as per your requirement
+  res.json({ success: true, message: 'File uploaded successfully' });
+};
+
+
 export const employeIdcontroller = async (req, res) => {
   // Logic to fetch districts by state ID from the database
   const { EmployeeId } = req.params;
