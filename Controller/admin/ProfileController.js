@@ -1,13 +1,32 @@
 import {pool} from "../../config/db.js";
+// Controller/admin/ProfileController.js
+import path from 'path';
+import fs from 'fs';
 
+export const PhotoController = (req, res) => {
+  const { EmployeeId } = req.params;
 
+  // Construct the file path
+  const filePath = path.join('/mnt/shared_images/IDCardPath', `${EmployeeId}.jpg`);
 
-export const PhotoController =async (req, res) => {
+  // Check if file exists before sending
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.error('File does not exist:', filePath);
+      return res.status(404).json({ success: false, message: 'Image not found' });
+    }
 
-  // Assuming you don't need to fetch from the database as per your requirement
-  res.json({ success: true, message: 'Image fetched successfully' });
+    // Serve the image
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        console.error('Error serving file:', err);
+        res.status(500).json({ success: false, message: 'Error serving image' });
+      } else {
+        console.log('Image served successfully');
+      }
+    });
+  });
 };
-
 export const getProfileDetails = async (req, res) => {
   console.log(req.headers.authorization.split(" ")[1], "hiiiiiii");
   try {
