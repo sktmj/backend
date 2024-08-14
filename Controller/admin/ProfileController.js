@@ -1,5 +1,13 @@
 import {pool} from "../../config/db.js";
 
+
+
+export const PhotoController =async (req, res) => {
+
+  // Assuming you don't need to fetch from the database as per your requirement
+  res.json({ success: true, message: 'File get successfully' });
+};
+
 export const getProfileDetails = async (req, res) => {
   console.log(req.headers.authorization.split(" ")[1], "hiiiiiii");
   try {
