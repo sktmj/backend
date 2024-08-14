@@ -6,7 +6,7 @@ import upload from "../../Middleware/IdPhotoMulter.js";
 const router = express.Router();
 
 router.get("/profile", getProfileDetails);
-router.post('pic/:EmployeeId', upload.single('IDCardImage'), PhotoController);
+router.get('/pic/:EmployeeId', upload.single('IDCardImage'), PhotoController);;
 
 
 // export the router

@@ -5,7 +5,7 @@ import {pool} from "../../config/db.js";
 export const PhotoController =async (req, res) => {
 
   // Assuming you don't need to fetch from the database as per your requirement
-  res.json({ success: true, message: 'File get successfully' });
+  res.json({ success: true, message: 'Image fetched successfully' });
 };
 
 export const getProfileDetails = async (req, res) => {
