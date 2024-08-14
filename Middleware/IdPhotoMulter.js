@@ -1,32 +1,33 @@
-// multer.js
 import multer from 'multer';
 import path from 'path';
 
-// Define the base upload directory
 const baseUploadDir = '/mnt/shared_images';
 const IDCardPath = path.join(baseUploadDir, 'IDCardPath');
 
-// Configure Multer storage
+// Configure storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, IDCardPath); // Specify the directory to store files
+    cb(null, IDCardPath); // Directory to store files
   },
   filename: (req, file, cb) => {
     const { EmployeeId } = req.params;
-    const ext = path.extname(file.originalname);
-    cb(null, `${EmployeeId}${ext}`); // Save file with EmployeeId as the filename
+    const ext = path.extname(file.originalname); // Get the file extension
+    cb(null, `${EmployeeId}${ext}`); // Save file with EmployeeId and original extension
   }
 });
 
+// Filter for accepted file types
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true); // Accept image files
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true); // Accept file
   } else {
-    cb(new Error('Invalid file type'), false); // Reject non-image files
+    cb(new Error('Invalid file type'), false); // Reject file
   }
 };
 
-const upload = multer({ 
+// Create multer instance
+const upload = multer({
   storage,
   fileFilter,
 });
