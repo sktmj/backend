@@ -2,21 +2,26 @@ import {pool} from "../../config/db.js";
 // Controller/admin/ProfileController.js
 import path from 'path';
 import fs from 'fs';
+// Helper function to find the image file with multiple extensions
+const findImageFile = (employeeId) => {
+  const extensions = ['.jpg', '.jpeg', '.png']; // Add other extensions if needed
+  for (const ext of extensions) {
+    const filePath = path.join('/mnt/shared_images/IDCardPath', `${employeeId}${ext}`);
+    if (fs.existsSync(filePath)) {
+      return filePath;
+    }
+  }
+  return null;
+};
 
 export const PhotoController = (req, res) => {
   const { EmployeeId } = req.params;
 
-  // Construct the file path
-  const filePath = path.join('/mnt/shared_images/IDCardPath', `${EmployeeId}.jpg`);
+  // Find the file path for the image
+  const filePath = findImageFile(EmployeeId);
 
-  // Check if file exists before sending
-  fs.access(filePath, fs.constants.F_OK, (err) => {
-    if (err) {
-      console.error('File does not exist:', filePath);
-      return res.status(404).json({ success: false, message: 'Image not found' });
-    }
-
-    // Serve the image
+  if (filePath) {
+    // Serve the image if found
     res.sendFile(filePath, (err) => {
       if (err) {
         console.error('Error serving file:', err);
@@ -25,7 +30,11 @@ export const PhotoController = (req, res) => {
         console.log('Image served successfully');
       }
     });
-  });
+  } else {
+    // Respond with 404 if no image found
+    console.error('File does not exist:', filePath);
+    res.status(404).json({ success: false, message: 'Image not found' });
+  }
 };
 export const getProfileDetails = async (req, res) => {
   console.log(req.headers.authorization.split(" ")[1], "hiiiiiii");
