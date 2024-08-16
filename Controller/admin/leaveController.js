@@ -115,8 +115,6 @@ export const insertLeaveController = async (req, res) => {
       .input("LeaveType", sql.Char, LeaveType)
       .input("FromDate", sql.DateTime, FromDate)
       .input("ToDate", sql.DateTime, ToDate)
-      .input("FromTime",sql.Int,FromTime)
-      .input("ToTime",sql.Int,ToTime)
       .input("Reason", sql.Int, Reason)
       .input("Remarks", sql.VarChar, Remarks)
       .input("UserId", sql.Int, UserId)
