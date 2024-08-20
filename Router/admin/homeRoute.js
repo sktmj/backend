@@ -1,5 +1,5 @@
 import express from "express";
-import { HomeController } from "../../Controller/admin/homeController";
+import { HomeController } from "../../Controller/admin/homeController.js";
 
 
 
