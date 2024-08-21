@@ -1,64 +1,102 @@
-import sql from 'mssql';
-import { pool } from '../../config/db.js';
+import sql from "mssql";
+import { pool } from "../../config/db.js";
 
 export const HomeController = async (req, res) => {
   const { EmployeeId } = req.params;
-  const { StDate, EndDate, CalendarId } = req.query;
+  const { StDate, EndDate } = req.query;
 
-  console.log('EmployeeId:', EmployeeId);
-  console.log('StDate:', StDate);
-  console.log('EndDate:', EndDate);
+  console.log("EmployeeId:", EmployeeId);
+  console.log("StDate:", StDate);
+  console.log("EndDate:", EndDate);
 
-  let cond = '';
+  let cond = "";
+
   if (EmployeeId) {
-    cond = ' AND EMP.EmployeeId = @EmployeeId';
+    cond = ` AND EMP.EmployeeId = @EmployeeId`;
   }
 
   try {
-    // Fetch attendance data
-    const attendanceResult = await pool.request()
-      .input('EmployeeId', sql.Int, EmployeeId)
-      .input('StDate', sql.Date, new Date(StDate))
-      .input('EndDate', sql.Date, new Date(EndDate))
+    const result = await pool
+      .request()
+      .input("EmployeeId", sql.Int, EmployeeId)
+      .input("StDate", sql.Date, new Date(StDate))
+      .input("EndDate", sql.Date, new Date(EndDate))
       .query(`
         SELECT 
-          CONVERT(nvarchar, AttendanceDate, 103) as AttDate,
-          SUBSTRING(CONVERT(VARCHAR, InTime, 108), 1, 5) as InTime,
-          SUBSTRING(CONVERT(VARCHAR, OutTime, 108), 1, 5) as OutTime,
+          FAC.FactoryName as Factory,
+          EMP.BiometricCode as ECNo,
+          EMP.Name,
+          ISNULL(SUM(CASE WHEN ATT.Present = 'Y' THEN 1.0 ELSE 0.0 END), 0.0) +
+          ISNULL(SUM(CASE WHEN ATT.HalfDayPresent = 'Y' THEN 0.5 ELSE 0.0 END), 0.0) as Present,
+          ISNULL(SUM(CASE WHEN ATT.Present = 'O' THEN 1.0 ELSE 0.0 END), 0.0) as OnDuty,
+          ISNULL(SUM(CASE WHEN ATT.Leave = 'Y' THEN 1.0 ELSE 0.0 END), 0.0) as Leave,
+          ISNULL(SUM(CASE WHEN ATT.Absent = 'Y' AND ATT.WeekOff = 'N' AND ATT.Holiday = 'N' THEN 1.0 ELSE 0.0 END), 0.0) as Absent,
+          ISNULL(SUM(CASE WHEN ATT.WeekOff = 'Y' THEN 1.0 ELSE 0.0 END), 0.0) as WeekOff,
+          ISNULL(SUM(CASE WHEN ATT.Holiday = 'Y' THEN 1.0 ELSE 0.0 END), 0.0) as Holiday,
+          CONVERT(nvarchar, ATT.AttendanceDate, 103) as AttDate,
+          SUBSTRING(CONVERT(nvarchar, ATT.InTime, 108), 1, 5) as InTime,
+          SUBSTRING(CONVERT(nvarchar, ATT.OutTime, 108), 1, 5) as OutTime,
           CASE 
-            WHEN Present = 'Y' THEN 'P'
-            WHEN Present = 'O' THEN 'O'
-            WHEN HalfDayPresent = 'Y' THEN 'P/'
-            WHEN Absent = 'Y' AND WeekOff = 'N' AND Holiday = 'N' THEN 'A'
-            WHEN WeekOff = 'Y' THEN 'W'
-            WHEN Holiday = 'Y' THEN 'H'
+            WHEN ATT.Present = 'Y' THEN 'P'
+            WHEN ATT.Present = 'O' THEN 'O'
+            WHEN ATT.HalfDayPresent = 'Y' THEN 'P/'
+            WHEN ATT.Absent = 'Y' AND ATT.WeekOff = 'N' AND ATT.Holiday = 'N' THEN 'A'
+            WHEN ATT.WeekOff = 'Y' THEN 'W'
+            WHEN ATT.Holiday = 'Y' THEN 'H'
             ELSE 'L'
           END as DayType
-        FROM EmployeeAttendance EMP
-        WHERE AttendanceDate >= @StDate
-          AND AttendanceDate <= @EndDate
+        FROM 
+          EmployeeMaster EMP
+        INNER JOIN 
+          FactoryMaster FAC ON FAC.FactoryId = EMP.FactoryId
+        LEFT JOIN 
+          (SELECT 
+            EmployeeId,
+            Present,
+            HalfDayPresent,
+            Leave,
+            Absent,
+            WeekOff,
+            Holiday,
+            AttendanceDate,
+            InTime,
+            OutTime
+           FROM 
+            EmployeeAttendance
+           WHERE 
+            AttendanceDate >= @StDate
+            AND AttendanceDate <= @EndDate
+          ) ATT ON ATT.EmployeeId = EMP.EmployeeId
+        WHERE 
+          EMP.IsValid = 'Y' 
           ${cond}
-        ORDER BY AttendanceDate;
+        GROUP BY 
+          FAC.FactoryName,
+          EMP.BiometricCode,
+          EMP.Name,
+          ATT.AttendanceDate,
+          ATT.InTime,
+          ATT.OutTime,
+          ATT.Present,
+          ATT.HalfDayPresent,
+          ATT.Absent,
+          ATT.WeekOff,
+          ATT.Holiday
       `);
 
-    // Fetch calendar data
-    const calendarResult = await pool.request()
-      .input('CalendarId', sql.Int, CalendarId)
-      .query(`
-        SELECT 
-          CONVERT(varchar, CalendarStart, 103) as CalendarStart,
-          CONVERT(varchar, CalendarEnd, 103) as CalendarEnd,
-          WorkingDays,
-          CalendarName
-        FROM Calendar
-        WHERE CalendarId = @CalendarId;
-      `);
+    const itemList = result.recordset.map(record => ({
+      Present: record.Present,
+      Absent: record.Absent,
+      Leave: record.Leave,
+      OnDuty: record.OnDuty,
+      WeekOff: record.WeekOff,
+      Holiday: record.Holiday,
+      AttDate: record.AttDate,
+      InTime: record.InTime,
+      OutTime: record.OutTime,
+    }));
 
-    // Send response
-    res.json({
-      attendanceData: attendanceResult.recordset,
-      calendarData: calendarResult.recordset[0], // Assuming CalendarId returns a single record
-    });
+    res.json(itemList);
   } catch (err) {
     console.error("Error fetching data:", err);
     res.status(500).json({ error: "Error fetching data" });
