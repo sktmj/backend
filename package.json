@@ -33,6 +33,7 @@
     "node-fetch": "^3.3.2",
     "otp-generator": "^4.0.1",
     "ref-napi": "^3.0.3",
+    "ref-struct-napi": "^1.1.1",
     "sequelize": "^6.37.2",
     "tedious": "^18.1.0",
     "uuid": "^10.0.0"
